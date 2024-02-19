@@ -1,0 +1,11 @@
+{
+  "name": "traidr-backend",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "git@github.com:decadevs/traidr-backend.git",
+  "author": "xeth99 <you@examemmanuelfemi01@gmanil.com>",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+}
