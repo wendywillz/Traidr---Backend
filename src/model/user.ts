@@ -3,8 +3,7 @@ import sequelize from '../database/database.config'
 
 class Customer extends Model {
   public id!: string
-  public FirstName!: string
-  public LastName!: string
+  public name!: string
   public otp!: string
   public otpSecret!: string
   public otpExpirationTime!: Date
@@ -23,11 +22,7 @@ Customer.init(
       primaryKey: true,
       unique: true
     },
-    FirstName: {
-      type: DataTypes.STRING,
-      allowNull: false
-    },
-    LastName: {
+    name: {
       type: DataTypes.STRING,
       allowNull: false
     },

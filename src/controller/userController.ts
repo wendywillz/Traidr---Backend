@@ -5,7 +5,7 @@ import Customer from "../model/user";
 
 export const createUser = async (req: Request, res: Response): Promise<void> => {
     try {
-        const { FirstName, LastName, email, password, phoneNumber } = req.body;
+        const { name, email, password, phoneNumber } = req.body;
 
         const existingUser = await Customer.findOne({ where: { email } });
         if (existingUser) {
@@ -21,8 +21,7 @@ export const createUser = async (req: Request, res: Response): Promise<void> => 
 
          //create a new user
         const newUser = await Customer.create({
-            FirstName,
-            LastName,
+            name,
             email,
             password: hashedPassword,
             phoneNumber,
@@ -38,7 +37,7 @@ export const createUser = async (req: Request, res: Response): Promise<void> => 
           res.status(200).json({
             status: 'success',
             message: 'Signup successful',
-            customerDetail: { FirstName, LastName, email, phoneNumber }
+            customerDetail: { name, email, phoneNumber }
           })
         } catch (error) {
           console.error('Error during customer signup:', error)
@@ -76,8 +75,7 @@ export const createGoogleUser = async (req: Request, res: Response): Promise<voi
                 status: 'success',
                 message: 'Google Sign-In user created successfully',
                 user: {
-                    firstName: newUser.FirstName,
-                    lastName: newUser.LastName,
+                    name: newUser.name,
                     email: newUser.email
                 }
             });
