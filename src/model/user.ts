@@ -6,6 +6,7 @@ class Customer extends Model {
   public FirstName!: string
   public LastName!: string
   public otp!: string
+  public otpSecret!: string
   public otpExpirationTime!: Date
   public email!: string
   public isVerified!: boolean
@@ -22,15 +23,15 @@ Customer.init(
       primaryKey: true,
       unique: true
     },
-    FirstName: {
-      type: DataTypes.STRING,
-      allowNull: false
-    },
-    LastName: {
+    name: {
       type: DataTypes.STRING,
       allowNull: false
     },
     otp: {
+      type: DataTypes.STRING,
+      allowNull: true
+    },
+    otpSecret: {
       type: DataTypes.STRING,
       allowNull: true
     },
