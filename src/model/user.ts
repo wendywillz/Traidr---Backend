@@ -23,7 +23,11 @@ Customer.init(
       primaryKey: true,
       unique: true
     },
-    name: {
+    FirstName: {
+      type: DataTypes.STRING,
+      allowNull: false
+    },
+    LastName: {
       type: DataTypes.STRING,
       allowNull: false
     },
