@@ -33,7 +33,10 @@ export const customerOtp = async (req: Request, res: Response): Promise<void> =>
             },
             to: email,
             subject: 'Traïdr - Account Verification',
-            text: otpToken
+            text: `Dear customer,
+            Kindly find your OTP below:
+            ${otpToken}.
+            Thank you for choosing Traïdr.`,
         };
       
         await transporter.sendMail(mailOptions);
