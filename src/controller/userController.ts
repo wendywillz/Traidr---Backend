@@ -84,3 +84,8 @@ export const createGoogleUser = async (req: Request, res: Response): Promise<voi
             res.status(500).json({ error: 'Server error' });
         }
     };
+
+const loginUser = async (req: Request, res: Response): Promise<void> => { 
+    const { email, password } = req.body;
+    const existingUser = await Customer.findOne({ where: { email } });
+}
