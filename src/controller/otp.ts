@@ -3,6 +3,7 @@ import Customer from '../model/user';
 import speakeasy from 'speakeasy';
 import { transporter } from '../utils/emailSender';
 
+
 export const customerOtp = async (req: Request, res: Response): Promise<void> => {
     try {
         const { email } = req.body;
@@ -28,11 +29,11 @@ export const customerOtp = async (req: Request, res: Response): Promise<void> =>
         const mailOptions = {
             from: {
               name: 'Traïdr Decagon',
-              address: 'traïdr@gmail.com'
+              address: 'traidr.decagon@gmail.com'
             },
             to: email,
             subject: 'Traïdr - Account Verification',
-            text: `Please click on the following link to verify your account: ${process.env.CLIENT_URL}/login?email=${email}&otp=${otpToken}`
+            text: otpToken
         };
       
         await transporter.sendMail(mailOptions);
@@ -40,7 +41,7 @@ export const customerOtp = async (req: Request, res: Response): Promise<void> =>
         res.status(200).json({ message: 'OTP sent successfully. Check your email.' });
 
     } catch (error) {
-        console.error('Error creating customer:', error);
+        console.log('Error creating customer:', error);
         res.status(500).json({ error: 'Internal server error' });
     }
 };
