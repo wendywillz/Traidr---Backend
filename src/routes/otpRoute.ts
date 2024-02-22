@@ -7,3 +7,5 @@ const router = express.Router();
 router.post('/send-otp', customerOtp);
 
 router.post('/verify-otp', verifyCustomerOtp);
+
+export default router;
