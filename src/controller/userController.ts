@@ -2,6 +2,12 @@ import { Request, Response } from "express";
 import { hashPassword } from '../utils/password';
 import { googleSignIn } from '../utils/googleAuth';
 import Customer from "../model/user";
+import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
+import { error } from "console";
+
+
+const secret: string = (process.env.secret ?? '')
 
 export const createUser = async (req: Request, res: Response): Promise<void> => {
     try {
@@ -87,5 +93,38 @@ export const createGoogleUser = async (req: Request, res: Response): Promise<voi
 
 const loginUser = async (req: Request, res: Response): Promise<void> => { 
     const { email, password } = req.body;
-    const existingUser = await Customer.findOne({ where: { email } });
+    const existingUser = await Customer.findOne({ where: { email } })
+
+
+if (!existingUser) {
+    res.status(404).json({
+      customerNotFoundError: 'customer not found'
+    })
+  } else {
+    const isPasswordValid = await bcrypt.compare(password, existingUser.dataValues.password)
+
+    if (!isPasswordValid) {
+      res.status(401).json({
+        inValidPassword: 'Invalid password'
+      })
+    } else {
+      const token = jwt.sign({ loginkey: existingUser.dataValues.email }, secret, { expiresIn: '1h' })
+
+      res.cookie('token', token, { httpOnly: true, secure: false })
+
+      res.json({
+        successfulLogin: 'Login successful'
+      })
+    }
+  }
+try {
+    // Code that may throw an error
+} catch (error: any) {
+    // Error handling logic
+}
+  console.error('Error during customer login:', error )
+
+  res.status(500).json({
+    internalServerError: `Error: ${ error }`
+  })
 }
