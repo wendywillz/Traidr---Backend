@@ -1,5 +1,6 @@
 import express from "express";
 import { createUser, createGoogleUser } from '../controller/userController';
+import { customerOtp, verifyCustomerOtp } from "../controller/otp";
 
 const router = express.Router();
 
@@ -13,5 +14,11 @@ router.post('/createUser', createUser);
 
 // Endpoint for creating a new user using Google Sign-In
 router.post('/createGoogleUser', createGoogleUser);
+
+// Enpoint for sending OTP
+router.post('/send-otp', customerOtp);
+
+// Enpoint for verifying OTP
+router.post('/verify-otp', verifyCustomerOtp);
 
 export default router;
