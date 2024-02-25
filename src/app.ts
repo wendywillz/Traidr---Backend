@@ -4,6 +4,7 @@ import cookieParser from 'cookie-parser';
 import logger from 'morgan';
 import sequelize from './database/database.config';
 import dotenv from 'dotenv';
+import changePassword from './routes/changePassword'
 
 dotenv.config();
 
@@ -31,5 +32,7 @@ app.use(express.static(path.join(__dirname, "../", 'public')));
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/otp', otpRouter);
+
+app.use('/changePassword', changePassword);
 
 export default app;
