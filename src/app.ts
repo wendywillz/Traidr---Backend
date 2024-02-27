@@ -6,6 +6,8 @@ import DB from './database/database.config';
 import dotenv from 'dotenv';
 import changePassword from './routes/changePassword'
 import otpRoute from './routes/otpRoute'
+import paymentRoute from './routes/paymentRoute';
+
 
 dotenv.config();
 
@@ -35,5 +37,7 @@ app.use('/users', usersRouter);
 app.use('/users-otp', otpRoute);
 
 app.use('/changePassword', changePassword);
+app.use('/savePayment', paymentRoute);
+
 
 export default app;
