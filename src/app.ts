@@ -2,7 +2,7 @@ import express from 'express';
 import path from 'path';
 import cookieParser from 'cookie-parser';
 import logger from 'morgan';
-import sequelize from './database/database.config';
+import DB from './database/database.config';
 import dotenv from 'dotenv';
 import changePassword from './routes/changePassword'
 
@@ -12,7 +12,7 @@ import indexRouter from './routes/index';
 import usersRouter from './routes/users';
 
 
-sequelize.sync()
+DB.sync()
 .then(() => {
    console.log("Database has been connected")
 }).catch((error) => {
