@@ -1,6 +1,6 @@
 import express from "express";
 import { createUser, createGoogleUser } from '../controller/userController';
-import { customerOtp, verifyCustomerOtp } from "../controller/otp";
+import { verifyCustomerOtp } from "../controller/userController";
 
 const router = express.Router();
 
@@ -16,7 +16,7 @@ router.post('/createUser', createUser);
 router.post('/createGoogleUser', createGoogleUser);
 
 // Enpoint for sending OTP
-router.post('/send-otp', customerOtp);
+router.post('/send-otp', createUser);
 
 // Enpoint for verifying OTP
 router.post('/verify-otp', verifyCustomerOtp);
