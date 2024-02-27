@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { hashPassword } from '../utils/password';
 import { googleSignIn } from '../utils/googleAuth';
-import Customer from "../model/user";
+import User from "../model/user";
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { error } from "console";
@@ -10,23 +10,23 @@ import { error } from "console";
 const secret: string = (process.env.secret ?? '')
 
 export const createUser = async (req: Request, res: Response): Promise<void> => {
-    try {
+  try {
         const { name, email, password, phoneNumber } = req.body;
 
-        const existingUser = await Customer.findOne({ where: { email } });
+        const existingUser = await User.findOne({ where: { email } });
         if (existingUser) {
-         res.status(400).json({ 
-            status: 'failed',
-            message: 'Email is already in use, try another email' 
+         res.json({ 
+            signupSuccessful: 'Email is already in use, try another email' 
         });
             return
         }
 
-         //hash the password
+        else {
+            //hash the password
          const hashedPassword = await hashPassword(password);
 
          //create a new user
-        const newUser = await Customer.create({
+        const newUser = await User.create({
             name,
             email,
             password: hashedPassword,
@@ -34,21 +34,19 @@ export const createUser = async (req: Request, res: Response): Promise<void> => 
         });
 
         if (!newUser) {
-            res.status(400).json({
-              status: 'failed',
-              message: 'Invalid details, account cannot be created'
+            res.json({
+              unableToCreateUSer: 'Invalid details, account cannot be created'
             })
-            return
           }
-          res.status(200).json({
-            status: 'success',
-            message: 'Signup successful',
-            customerDetail: { name, email, phoneNumber }
+        else {
+           res.json({
+            signupSuccessful: 'Signup successful'
           })
+         }
+       }
         } catch (error) {
-          console.error('Error during customer signup:', error)
-          res.status(500).json({
-            status: 'error',
+          console.log('Error during User signup:', error)
+          res.json({
             Errormessage: 'Internal server error'
           })
         }
@@ -61,7 +59,7 @@ export const createGoogleUser = async (req: Request, res: Response): Promise<voi
             // Authenticate with Google and retrieve user information
             const userData = await googleSignIn(googleToken);
     
-            const existingUser = await Customer.findOne({ where: { email: userData.email } });
+            const existingUser = await User.findOne({ where: { email: userData.email } });
             if (existingUser) {
                     res.status(400).json({ 
                     status: 'failed',
@@ -70,7 +68,7 @@ export const createGoogleUser = async (req: Request, res: Response): Promise<voi
             }
     
             // Create a new user with Google Sign-In data
-            const newUser = new Customer({
+            const newUser = new User({
                 username: userData.username,
                 email: userData.email,
                 googleSignIn: true, // Marking this user as signed in with Google
@@ -91,14 +89,14 @@ export const createGoogleUser = async (req: Request, res: Response): Promise<voi
         }
     };
 
-const loginUser = async (req: Request, res: Response): Promise<void> => { 
+export const loginUser = async (req: Request, res: Response): Promise<void> => { 
     const { email, password } = req.body;
-    const existingUser = await Customer.findOne({ where: { email } })
+    const existingUser = await User.findOne({ where: { email } })
 
 
 if (!existingUser) {
     res.status(404).json({
-      customerNotFoundError: 'customer not found'
+      userNotFoundError: 'User not found'
     })
   } else {
     const isPasswordValid = await bcrypt.compare(password, existingUser.dataValues.password)
@@ -119,7 +117,7 @@ if (!existingUser) {
   }
 try {
     // Code that may throw an error
-} catch (error: any) {
+} catch (error: unknown) {
     // Error handling logic
 }
   console.error('Error during customer login:', error )
