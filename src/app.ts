@@ -5,6 +5,7 @@ import logger from 'morgan';
 import DB from './database/database.config';
 import dotenv from 'dotenv';
 import changePassword from './routes/changePassword'
+import otpRoute from './routes/otpRoute'
 
 dotenv.config();
 
@@ -31,6 +32,7 @@ app.use(express.static(path.join(__dirname, "../", 'public')));
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
+app.use('/users-otp', otpRoute);
 
 app.use('/changePassword', changePassword);
 

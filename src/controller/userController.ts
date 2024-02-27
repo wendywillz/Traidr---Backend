@@ -5,52 +5,120 @@ import User from "../model/user";
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { error } from "console";
+import speakeasy from 'speakeasy';
+import { transporter } from '../utils/emailSender';
 
 
 const secret: string = (process.env.secret ?? '')
 
 export const createUser = async (req: Request, res: Response): Promise<void> => {
   try {
-        const { name, email, password, phoneNumber } = req.body;
+    const { name, email, password, phoneNumber } = req.body;
 
-        const existingUser = await User.findOne({ where: { email } });
-        if (existingUser) {
-         res.json({ 
-            signupSuccessful: 'Email is already in use, try another email' 
-        });
-            return
-        }
+    const existingUser = await User.findOne({ where: { email } });
+    if (existingUser) {
+      res.json({ 
+        signupSuccessful: 'Email is already in use, try another email' 
+    });
+        return
+    }
+    else {
+        //hash the password
+      const hashedPassword = await hashPassword(password);
 
-        else {
-            //hash the password
-         const hashedPassword = await hashPassword(password);
+      //create a new user
+    const newUser = await User.create({
+        name,
+        email,
+        password: hashedPassword,
+        phoneNumber,
+    });
 
-         //create a new user
-        const newUser = await User.create({
-            name,
-            email,
-            password: hashedPassword,
-            phoneNumber,
-        });
-
-        if (!newUser) {
-            res.json({
-              unableToCreateUSer: 'Invalid details, account cannot be created'
-            })
-          }
-        else {
-           res.json({
-            signupSuccessful: 'Signup successful'
-          })
-         }
-       }
-        } catch (error) {
-          console.log('Error during User signup:', error)
-          res.json({
-            Errormessage: 'Internal server error'
-          })
-        }
+    if (!newUser) {
+        res.json({
+          unableToCreateUSer: 'Invalid details, account cannot be created'
+        })
       }
+    else {
+      const customer = await User.findOne({ where: { email } });
+
+      if (!customer) {
+          res.status(400).json({
+              error: 'Customer not found. Please sign up.'
+          });
+          return;
+      }
+      else {
+      const otpSecret = speakeasy.generateSecret({ length: 20 }).base32;
+
+      customer.otpSecret = otpSecret;
+      const otpToken = speakeasy.totp({
+        secret: otpSecret,
+        encoding: 'base32',
+      });
+      customer.otpExpirationTime = new Date(Date.now() + 5 * 60 * 1000);
+
+      await customer.update({
+        otpSecret: customer.otpSecret,
+        otpToken: otpToken,
+        otpExpirationTime: customer.otpExpirationTime
+      });
+
+      const mailOptions = {
+          from: {
+            name: 'Traïdr Decagon',
+            address: 'traidr.decagon@gmail.com'
+          },
+          to: email,
+          subject: 'Traïdr - Account Verification',
+          text: `Dear customer,\n\n Kindly find your OTP below: \n\n ${otpToken}. \n\n Thank you for choosing Traïdr.`,
+      };
+      
+      await transporter.sendMail(mailOptions);
+      
+      res.status(200).json({ message: 'OTP sent successfully. Check your email.' });
+      } 
+      }
+    }
+  }catch (error) {
+  console.log('Error during User signup:', error)
+  res.json({
+    Errormessage: 'Internal server error'
+  })
+}
+}
+
+export const verifyCustomerOtp = async (req: Request, res: Response): Promise<void> => {
+  try {
+      const { email, otp } = req.query;
+      const existingCustomer = await User.findOne({ where: { email, otp } });
+
+      if (!existingCustomer) {
+          res.status(400).json({
+              error: 'Customer not found. Please sign up.'
+          });
+          return;
+      }
+
+      // Verify the customer's OTP token
+      const verified = speakeasy.totp.verify({
+          secret: existingCustomer.otpSecret,
+          encoding: 'base32',
+          token: otp as string,
+      });
+
+      if (verified) {
+          existingCustomer.isVerified = true;
+          await existingCustomer.save();
+          res.status(200).json({ message: 'Customer verified successfully.' });
+      } else {
+          res.status(400).json({ error: 'Invalid OTP. Please try again.' });
+      }
+  } catch (error) {
+      console.error('Error verifying customer:', error);
+      res.status(500).json({ error: 'Internal server error' });
+  }
+};
 
 export const createGoogleUser = async (req: Request, res: Response): Promise<void> => {
     try {
