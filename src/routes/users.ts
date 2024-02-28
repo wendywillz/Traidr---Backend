@@ -1,5 +1,5 @@
 import express from "express";
-import { createUser, createGoogleUser } from '../controller/userController';
+import { createUser, createGoogleUser, loginUser } from '../controller/userController';
 import { verifyCustomerOtp } from "../controller/userController";
 
 const router = express.Router();
@@ -20,5 +20,7 @@ router.post('/send-otp', createUser);
 
 // Enpoint for verifying OTP
 router.post('/verify-otp', verifyCustomerOtp);
+
+router.post('/login', loginUser);
 
 export default router;
