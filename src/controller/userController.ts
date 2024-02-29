@@ -32,6 +32,8 @@ export const createUser = async (req: Request, res: Response): Promise<void> => 
       password: hashedPassword,
         hearAboutUs
     });
+      // const token = jwt.sign({ loginkey: email }, secret, { expiresIn: '1h' })
+
 
     if (!newUser) {
       console.log("unable to create user")
@@ -60,7 +62,7 @@ export const createUser = async (req: Request, res: Response): Promise<void> => 
 
       await customer.update({
         otpSecret: customer.otpSecret,
-        otpToken: otpToken,
+        otp: otpToken,
         otpExpirationTime: customer.otpExpirationTime
       });
 
@@ -71,12 +73,12 @@ export const createUser = async (req: Request, res: Response): Promise<void> => 
           },
           to: email,
           subject: 'Traïdr - Account Verification',
-          text: `Dear customer,\n\n Kindly find your OTP below: \n\n ${otpToken}. \n\n Thank you for choosing Traïdr.`,
+          text: `Dear customer,\n\n Kindly find your OTP below: \n\n ${otpToken} \n\n Thank you for choosing Traïdr.`,
       };
       
       await transporter.sendMail(mailOptions);
-      
-      res.json({ otpSentSuccessfully: 'OTP sent successfully. Check your email.' });
+      console.log("user created", newUser)
+      res.json({ otpSentSuccessfully: email });
       } 
       }
     }

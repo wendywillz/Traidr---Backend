@@ -4,7 +4,7 @@ import { sendCustomerOtp, verifyCustomerOtp } from "../controller/otpController"
 const router = express.Router();
 
 // Endpoint for sending OTP
-router.post('/send', sendCustomerOtp);
+router.post('/send-otp', sendCustomerOtp);
 
 // Endpoint for verifying OTP
 router.post('/verify', verifyCustomerOtp);
