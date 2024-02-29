@@ -12,7 +12,7 @@ const secret: string = (process.env.secret ?? '')
 
 export const createUser = async (req: Request, res: Response): Promise<void> => {
   try {
-    console.log("req", req.body)
+
     const { name, email, password, hearAboutUs } = req.body;
 
     const existingUser = await User.findOne({ where: { email } });
