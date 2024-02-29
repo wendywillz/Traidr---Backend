@@ -3,7 +3,6 @@ import User from "../model/user";
 import speakeasy from 'speakeasy';
 import { transporter } from '../utils/emailSender';
 
-
 export const sendCustomerOtp = async (req: Request, res: Response): Promise<void> => {
     try {
         const { email } = req.body;
@@ -56,20 +55,30 @@ export const sendCustomerOtp = async (req: Request, res: Response): Promise<void
 
 export const verifyCustomerOtp = async (req: Request, res: Response): Promise<void> => {
     try {
-        const { email, otp } = req.query;
-        const existingCustomer = await User.findOne({ where: { email, otp } });
+        const { otp, email } = req.body
+        console.log("otp", otp, email)
+       
+       const existingCustomer =  await User.findOne({ where: { email } });
 
+        console.log("exist", existingCustomer)
+        
         if (!existingCustomer) {
-            res.status(400).json({
-                error: 'Customer not found. Please sign up.'
+            res.json({
+                userNotFoundError: 'Customer not found. Please sign up.'
             });
             return;
         }
         else {
-            res.status(200).json({
-                message: 'Customer verified successfully'
-            });
+           const now = new Date()
+      if (now > existingCustomer.otpExpirationTime) {
+        res.json({ expiredOtpError: 'OTP has expired' })
+      }
+
+      await existingCustomer.update({ isVerified: true, otp: null, otpExpiration: null, otpSecret: null })
+        res.json({otpVerificationSuccessful: "otp verifired successfully"})     
         }
+          
+      
     }catch (error) {
     console.log('Error during User signup:', error)
     res.json({

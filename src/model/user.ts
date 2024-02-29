@@ -39,6 +39,10 @@ User.init(
       type: DataTypes.STRING,
       allowNull: true,
     },
+    hearAboutUs: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
     otpSecret: {
       type: DataTypes.STRING,
       allowNull: true,
@@ -64,10 +68,7 @@ User.init(
       type: DataTypes.STRING,
       allowNull: false,
     },
-    phoneNumber: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-    },
+    
     resetPasswordExpiration: {
       type: DataTypes.DATE,
       allowNull: true,

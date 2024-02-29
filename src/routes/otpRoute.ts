@@ -7,6 +7,6 @@ const router = express.Router();
 router.post('/send-otp', sendCustomerOtp);
 
 // Endpoint for verifying OTP
-router.post('/verify-otp', verifyCustomerOtp);
+router.post('/verify', verifyCustomerOtp);
 
 export default router;
