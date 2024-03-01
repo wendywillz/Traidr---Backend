@@ -77,7 +77,7 @@ export const createUser = async (req: Request, res: Response): Promise<void> => 
       };
       
       await transporter.sendMail(mailOptions);
-      console.log("user created", newUser)
+      console.log("user created")
       res.json({ otpSentSuccessfully: email });
       } 
       }
