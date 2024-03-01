@@ -77,7 +77,7 @@ export const createUser = async (req: Request, res: Response): Promise<void> => 
       };
       
       await transporter.sendMail(mailOptions);
-      console.log("user created", newUser)
+      console.log("user created")
       res.json({ otpSentSuccessfully: email });
       } 
       }
@@ -90,37 +90,6 @@ export const createUser = async (req: Request, res: Response): Promise<void> => 
 }
 }
 
-export const verifyCustomerOtp = async (req: Request, res: Response): Promise<void> => {
-  try {
-      const { email, otp } = req.query;
-      const existingCustomer = await User.findOne({ where: { email, otp } });
-
-      if (!existingCustomer) {
-          res.json({
-              customerNotFoundError: 'Customer not found. Please sign up.'
-          });
-          return;
-      }
-
-      // Verify the customer's OTP token
-      const verified = speakeasy.totp.verify({
-          secret: existingCustomer.otpSecret,
-          encoding: 'base32',
-          token: otp as string,
-      });
-
-      if (verified) {
-          existingCustomer.isVerified = true;
-          await existingCustomer.save();
-          res.json({ customerVerificationSuccessful: 'Customer verified successfully.' });
-      } else {
-          res.json({ invalidOtpError: 'Invalid OTP. Please try again.' });
-      }
-  } catch (error) {
-      console.error('Error verifying customer:', error);
-      res.json({ internalServerError: 'Internal server error' });
-  }
-};
 
 export const createGoogleUser = async (req: Request, res: Response): Promise<void> => {
     try {
