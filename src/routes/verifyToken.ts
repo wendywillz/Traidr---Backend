@@ -3,6 +3,6 @@ import { checkAndVerifyUserToken } from "../controller/userController";
 
 const routes = express.Router()
 
-routes.post("/", checkAndVerifyUserToken)
+routes.get("/", checkAndVerifyUserToken)
 
 export default routes
