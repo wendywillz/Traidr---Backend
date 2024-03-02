@@ -19,7 +19,7 @@ database_config_1.default.sync()
     .then(() => {
     console.log("Database has been connected");
 }).catch((error) => {
-    console.log("Error synching the database");
+    console.log("Error syncing the database");
     throw error;
 });
 const FRONTEND_URL = process.env.FRONTEND_URL;

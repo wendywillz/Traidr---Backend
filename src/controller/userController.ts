@@ -7,8 +7,10 @@ import jwt from 'jsonwebtoken';
 import speakeasy from 'speakeasy';
 import { transporter } from '../utils/emailSender';
 import Payment from '../model/payment';
+import { config } from 'dotenv';
 
-const secret: string = (process.env.secret ?? '')
+config();
+const secret: string = process.env.secret as string;
 
 export const createUser = async (req: Request, res: Response): Promise<void> => {
   try {
@@ -18,7 +20,7 @@ export const createUser = async (req: Request, res: Response): Promise<void> => 
     const existingUser = await User.findOne({ where: { email } });
     if (existingUser) {
       res.json({ 
-        emailExistError: 'Email is already in use, try another email' 
+        emailExistError: 'Email already already in use, try another email' 
     });
     }
     else {
@@ -32,13 +34,12 @@ export const createUser = async (req: Request, res: Response): Promise<void> => 
       password: hashedPassword,
         hearAboutUs
     });
-      // const token = jwt.sign({ loginkey: email }, secret, { expiresIn: '1h' })
-
+    
 
     if (!newUser) {
       console.log("unable to create user")
         res.json({
-          unableToCreateUSer: 'Invalid details, account cannot be created'
+          unableToCreateUser: 'Invalid details, account cannot be created'
         })
       }
     else {
@@ -140,17 +141,16 @@ export const loginUser = async (req: Request, res: Response): Promise<void> => {
         inValidPassword: 'Invalid password'
       })
     } else {
-      const token = jwt.sign({ loginkey: existingUser.dataValues.email }, secret, { expiresIn: '1h' })
 
-      res.cookie('token', token, { httpOnly: true, secure: false })
-
+      const token = jwt.sign({ userEmail: existingUser.dataValues.email }, secret, { expiresIn: '1h' })
+      
       res.json({
-        successfulLogin: 'Login successful'
+        successfulLogin: token
       })
     }
   }
  } catch (error) {
-   console.log("error", error)
+   console.log("error Login", error)
   res.json({internalServerError: "internal server error"})
  }
 }
@@ -160,18 +160,21 @@ export async function checkAndVerifyUserToken(req: Request, res: Response): Prom
     // const token = req.cookies.token
     const token = req.headers.authorization?.split(' ')[1]
     if (!token) {
+      console.log("no token")
       res.json({ noTokenError: 'Unauthorized - Token not provided' })
     } else {
-      const decoded = jwt.verify(token, secret) as { loginkey: string }
+      const decoded = jwt.verify(token, secret) as { userEmail: string }
       const user = await User.findOne({
-        where: { userId: decoded.loginkey }
+        where: { email: decoded.userEmail }
       })
+      console.log("user", user)
       res.json({ userDetail: user })
 
       // req.User = { UserId: User?.dataValues.UserId }
     }
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
+    console.log("error VErify", error)
     if (error.name === 'TokenExpiredError') {
       res.json({ tokenExpiredError: 'Unauthorized - Token has expired' })
     } else {
