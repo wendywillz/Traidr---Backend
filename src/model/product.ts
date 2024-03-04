@@ -53,7 +53,7 @@ Product.init(
       type: DataTypes.STRING,
       allowNull: false,
       references: {
-        model: 'Shop',
+        model: 'Shops',
         key: 'shopId', 
       },
     },
