@@ -1,13 +1,13 @@
 import { DataTypes, Model } from 'sequelize';
 import sequelize from '../database/database.config';
-
+import { v4 as uuidv4 } from 'uuid';
 class Product extends Model {
   public id!: string;
   public productTitle!: string;
   public productDescription!: string | null;
   public productCategory!: string | null;
-  public productImage!: Buffer;
-  public productVideo!: Buffer | null;
+  public productImage!: string;
+  public productVideo!: string | null;
   public productPrice!: number;
   public shopId!: string;
 
@@ -19,10 +19,11 @@ class Product extends Model {
 
 Product.init(
   {
-    id: {
-      type: DataTypes.STRING,
+   productId: {
+      type: DataTypes.UUID,
+      defaultValue: () => uuidv4(),
       primaryKey: true,
-      unique: true,
+      allowNull: false
     },
     productTitle: {
       type: DataTypes.STRING,
@@ -37,11 +38,11 @@ Product.init(
       allowNull: true,
     },
     productImage: {
-      type: DataTypes.BLOB,
+      type: DataTypes.STRING,
       allowNull: false,
     },
     productVideo: {
-      type: DataTypes.BLOB,
+      type: DataTypes.STRING,
       allowNull: true,
     },
     productPrice: {

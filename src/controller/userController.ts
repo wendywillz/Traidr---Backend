@@ -211,41 +211,37 @@ export const savePayment = async (req: Request, res: Response) => {
 };
 
 export const changePassword = async (req: Request, res: Response): Promise<void> => {
-    try {
-      console.log ("req.body", req.headers.authorization)
-
-      const token = req.headers.authorization?.split(' ')[1];
-      console.log("token", token)
-      if (!token) {
-        res.json({ noTokenError: 'Unauthorized - Token not provided' });
-      }
-      else {
-        const decoded = jwt.verify(token, secret) as { userEmail: string };
-        console.log("decoded", decoded)
-
-        const { currentPassword, newPassword } = req.body;
-        const user = await User.findOne({ where: { email: decoded.userEmail } });
-
-        if (!user) {
-            res.json({ userNotFound: 'User not found. Please sign up' });
-            return;
-        }
-
-        const passwordMatch = await bcrypt.compare(currentPassword, user.password);
-
-        if (!passwordMatch) {
-            res.json({ invaidPassword: 'Current password is incorrect' });
-            return;
-        }
-
-         const hashedPassword = await bcrypt.hash(newPassword, 12);
-         await user.update({ password: hashedPassword });
-         res.json({ message: 'Password changed successfully' });
-       
-    }} catch (error) {
-        console.error('Error sending email:', error);
-        res.status(500).json({interalServerError: 'Failed to send OTP' });
+  try {
+    const token = req.headers.authorization?.split(' ')[1];
+    if (!token) {
+      res.json({ noTokenError: 'Unauthorized - Token not provided' });
     }
-  };
+    else {
+      const decoded = jwt.verify(token, secret) as { userEmail: string };
+      console.log("decoded", decoded)
 
-    
+      const { currentPassword, newPassword } = req.body;
+      const user = await User.findOne({ where: { email: decoded.userEmail } });
+
+      if (!user) {
+        res.json({ userNotFound: 'User not found. Please sign up' });
+        return;
+      }
+
+      const passwordMatch = await bcrypt.compare(currentPassword, user.password);
+
+      if (!passwordMatch) {
+        res.json({ invaidPassword: 'Current password is incorrect' });
+        return;
+      }
+
+      const hashedPassword = await bcrypt.hash(newPassword, 12);
+      await user.update({ password: hashedPassword });
+      res.json({ message: 'Password changed successfully' });
+       
+    }
+  } catch (error) {
+    console.error('Error sending email:', error);
+    res.status(500).json({ interalServerError: 'Failed to send OTP' });
+  }
+}

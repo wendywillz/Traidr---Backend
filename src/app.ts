@@ -9,6 +9,8 @@ import cors from 'cors'
 import indexRouter from './routes/index';
 import usersRouter from './routes/users';
 import checkAndVerifyUserToken from './routes/verifyToken'
+import productRouter from './routes/productRoutes'
+import shopRouter from './routes/shopRoutes'
 dotenv.config();
 
 DB.sync()
@@ -36,6 +38,8 @@ app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/verify-token', checkAndVerifyUserToken);
 app.use('/users-otp', otpRoute);
+app.use('/products', productRouter);
+app.use('/shop', shopRouter);
 
 
 export default app;

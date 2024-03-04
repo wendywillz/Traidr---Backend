@@ -4,12 +4,11 @@ import sequelize from '../database/database.config';
 class Shop extends Model {
   public shopId!: string;
   public nameOfShop!: string;
-  public shopCurrency!: string | null;
-  public shopCategory!: string | null;
-  public howToGetPaid!: string | null;
-  public shopImage!: Buffer | null;
+  public shopCurrency!: string;
+  public shopCategory!: string;
+  public shopImage!: string | null;
   public shopDescription!: string;
-  public userId!: string;
+  public shopOwner!: string;
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   static associate(models: any): void {
@@ -25,7 +24,7 @@ Shop.init(
       primaryKey: true,
       unique: true,
     },
-    nameOfShop: {
+    shopName: {
       type: DataTypes.STRING,
       allowNull: false,
     },
@@ -37,19 +36,19 @@ Shop.init(
       type: DataTypes.STRING,
       allowNull: true,
     },
-    howToGetPaid: {
-      type: DataTypes.STRING,
-      allowNull: true,
-    },
+    // howToGetPaid: {
+    //   type: DataTypes.STRING,
+    //   allowNull: true,
+    // },
     shopImage: {
-      type: DataTypes.BLOB,
+      type: DataTypes.STRING,
       allowNull: true,
     },
     shopDescription: {
       type: DataTypes.STRING,
       allowNull: false,
     },
-    userId: {
+    shopOwner: {
       type: DataTypes.STRING,
       allowNull: false,
       references: {
