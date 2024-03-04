@@ -90,7 +90,7 @@ User.init(
   },
   {
     sequelize,
-    modelName: 'User',
+    modelName: 'Users',
   }
 );
 

@@ -1,11 +1,12 @@
 import { DataTypes, Model } from 'sequelize';
 import sequelize from '../database/database.config';
-
+import { v4 as uuidv4 } from 'uuid';
 class Shop extends Model {
   public shopId!: string;
-  public nameOfShop!: string;
-  public shopCurrency!: string;
-  public shopCategory!: string;
+  public shopName!: string;
+  public shopCurrency!: string | null;
+  public shopCategory!: string | null;
+  // public howToGetPaid!: string | null;
   public shopImage!: string | null;
   public shopDescription!: string;
   public shopOwner!: string;
@@ -20,9 +21,10 @@ class Shop extends Model {
 Shop.init(
   {
     shopId: {
-      type: DataTypes.STRING,
+      type: DataTypes.UUID,
+      defaultValue: () => uuidv4(),
       primaryKey: true,
-      unique: true,
+      allowNull: false
     },
     shopName: {
       type: DataTypes.STRING,
@@ -49,17 +51,17 @@ Shop.init(
       allowNull: false,
     },
     shopOwner: {
-      type: DataTypes.STRING,
+      type: DataTypes.UUID,
       allowNull: false,
       references: {
-        model: 'User',
+        model: 'Users',
         key: 'userId', 
       },
     },
   },
   {
     sequelize,
-    modelName: 'Shop',
+    modelName: 'Shops',
   }
 );
 
