@@ -14,6 +14,8 @@ const cors_1 = __importDefault(require("cors"));
 const index_1 = __importDefault(require("./routes/index"));
 const users_1 = __importDefault(require("./routes/users"));
 const verifyToken_1 = __importDefault(require("./routes/verifyToken"));
+const productRoutes_1 = __importDefault(require("./routes/productRoutes"));
+const shopRoutes_1 = __importDefault(require("./routes/shopRoutes"));
 dotenv_1.default.config();
 database_config_1.default.sync()
     .then(() => {
@@ -37,4 +39,6 @@ app.use('/', index_1.default);
 app.use('/users', users_1.default);
 app.use('/verify-token', verifyToken_1.default);
 app.use('/users-otp', otpRoute_1.default);
+app.use('/products', productRoutes_1.default);
+app.use('/shop', shopRoutes_1.default);
 exports.default = app;
