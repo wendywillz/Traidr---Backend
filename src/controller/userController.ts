@@ -231,13 +231,13 @@ export const changePassword = async (req: Request, res: Response): Promise<void>
       const passwordMatch = await bcrypt.compare(currentPassword, user.password);
 
       if (!passwordMatch) {
-        res.json({ invaidPassword: 'Current password is incorrect' });
+        res.json({ invaidPasswordError: 'Current password is incorrect' });
         return;
       }
 
       const hashedPassword = await bcrypt.hash(newPassword, 12);
       await user.update({ password: hashedPassword });
-      res.json({ message: 'Password changed successfully' });
+      res.json({ passwordChangedSuccessfully: 'Password changed successfully' });
        
     }
   } catch (error) {
