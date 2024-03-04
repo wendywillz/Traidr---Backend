@@ -8,6 +8,7 @@ import speakeasy from 'speakeasy';
 import { transporter } from '../utils/emailSender';
 import Payment from '../model/payment';
 import { config } from 'dotenv';
+import { token } from "morgan";
 
 config();
 const secret: string = process.env.secret as string;
@@ -78,7 +79,7 @@ export const createUser = async (req: Request, res: Response): Promise<void> => 
       };
       
       await transporter.sendMail(mailOptions);
-      console.log("user created")
+      console.log("user created",token)
       res.json({ otpSentSuccessfully: email });
       } 
       }
@@ -210,9 +211,20 @@ export const savePayment = async (req: Request, res: Response) => {
 };
 
 export const changePassword = async (req: Request, res: Response): Promise<void> => {
-  try {
-        const { email, currentPassword, newPassword } = req.body;
-        const user = await User.findOne({ where: { email } });
+    try {
+      console.log ("req.body", req.headers.authorization)
+
+      const token = req.headers.authorization?.split(' ')[1];
+      console.log("token", token)
+      if (!token) {
+        res.json({ noTokenError: 'Unauthorized - Token not provided' });
+      }
+      else {
+        const decoded = jwt.verify(token, secret) as { userEmail: string };
+        console.log("decoded", decoded)
+
+        const { currentPassword, newPassword } = req.body;
+        const user = await User.findOne({ where: { email: decoded.userEmail } });
 
         if (!user) {
             res.json({ userNotFound: 'User not found. Please sign up' });
@@ -230,8 +242,9 @@ export const changePassword = async (req: Request, res: Response): Promise<void>
          await user.update({ password: hashedPassword });
          res.json({ message: 'Password changed successfully' });
        
-    } catch (error) {
+    }} catch (error) {
         console.error('Error sending email:', error);
         res.status(500).json({interalServerError: 'Failed to send OTP' });
-    }
-};
+  };
+
+    
