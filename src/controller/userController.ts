@@ -210,7 +210,7 @@ export const savePayment = async (req: Request, res: Response) => {
 };
 
 export const changePassword = async (req: Request, res: Response): Promise<void> => {
-    try {
+  try {
         const { email, currentPassword, newPassword } = req.body;
         const user = await User.findOne({ where: { email } });
 

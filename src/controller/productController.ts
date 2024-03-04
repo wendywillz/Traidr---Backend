@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import Product from '../model/product';
  
-export const uploadProduct = async (req: Request, res: Response): Promise<void> => {
+export const addingNewProduct = async (req: Request, res: Response): Promise<void> => {
   try {
     const { productTitle, productDescription, productCategory, productPrice, shopId } = req.body;
  

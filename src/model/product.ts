@@ -37,11 +37,11 @@ Product.init(
       allowNull: true,
     },
     productImage: {
-      type: DataTypes.BLOB,
+      type: DataTypes.STRING,
       allowNull: false,
     },
     productVideo: {
-      type: DataTypes.BLOB,
+      type: DataTypes.STRING,
       allowNull: true,
     },
     productPrice: {
