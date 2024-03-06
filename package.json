@@ -51,6 +51,5 @@
     "nodemon": "^3.0.3",
     "prettier": "^3.2.5",
     "typescript": "^5.3.3"
-  },
-  "packageManager": "yarn@4.1.0"
+  }
 }

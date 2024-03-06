@@ -3,17 +3,26 @@ import { Request, Response } from 'express';
 
 export const createNewShop = async (req: Request, res: Response): Promise<void> => {
   try {
-    const { shopName, shopDescription, shopCurrency, shopCategory, shopLocation, shopOwner } = req.body;
+    console.log("req.body", req.body)
+    const { shopName, shopDescription, shopCurrency, shopCategory, shopCountry,
+      shopStreetAddress,
+      shopCity,
+      shopState,
+      shopZipCode, shopOwner } = req.body;
     const newShop = await ShopModel.create({
         shopName,
         shopCurrency,
       shopDescription,
       shopCategory,
-      shopLocation,
+      shopCountry,
+      shopStreetAddress,
+      shopCity,
+      shopState,
+      shopZipCode,
       shopOwner
     });
       console.log("newShop", newShop)
-    res.json({ shopAdded: newShop })
+    res.json({ shopCreated: newShop })
   } catch (error) {
     console.log('Error adding shop:', error)
     res.json({ error: 'Error adding shop' });

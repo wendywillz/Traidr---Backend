@@ -32,17 +32,17 @@ Shop.init(
     },
     shopCurrency: {
       type: DataTypes.STRING,
-      allowNull: true,
+      allowNull: false,
     },
     shopCategory: {
       type: DataTypes.STRING,
-      allowNull: true,
+      allowNull: false,
     },
     // howToGetPaid: {
     //   type: DataTypes.STRING,
     //   allowNull: true,
     // },
-    shopImage: {
+    shopImageURL: {
       type: DataTypes.STRING,
       allowNull: true,
     },
@@ -50,6 +50,27 @@ Shop.init(
       type: DataTypes.STRING,
       allowNull: false,
     },
+    shopCountry: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    shopStreetAddress: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    shopCity: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    shopState: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    shopZipCode: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+
     shopOwner: {
       type: DataTypes.UUID,
       allowNull: false,
