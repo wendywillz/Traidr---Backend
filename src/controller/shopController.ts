@@ -21,7 +21,7 @@ export const createNewShop = async (req: Request, res: Response): Promise<void> 
       shopZipCode,
       shopOwner
     });
-      console.log("newShop", newShop)
+      // console.log("newShop", newShop)
     res.json({ shopCreated: newShop })
   } catch (error) {
     console.log('Error adding shop:', error)
