@@ -1,5 +1,5 @@
 import express from 'express';
-import { addNewProduct } from '../controller/productController';
+import { addNewProduct, getProductsByShopId, getAllProducts } from '../controller/productController';
 import multer from 'multer';
 import path from 'path';
 
@@ -12,6 +12,7 @@ const storage = multer.diskStorage({
         cb(null, 'public/uploads/')
     },
     filename: function (req, file, cb) {
+        console.log("req", req.body)
         const productTitle = req.body.productTitle
         const fileName = `${productTitle}-${Date.now()}${path.extname(file.originalname)}`
         
@@ -22,6 +23,8 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage });
 
 
-router.post('/add-product', upload.fields([{ name: 'productPhoto', maxCount: 1 }, { name: 'productVideo', maxCount: 1 }]), addNewProduct);
- 
+router.post('/add-product/:shopId', upload.fields([{ name: 'productPhoto', maxCount: 1 }, { name: 'productVideo', maxCount: 1 }]), addNewProduct);
+router.get('/get-products/:shopId', getProductsByShopId); 
+router.get('/get-all-products', getAllProducts); 
+
 export default router;

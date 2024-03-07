@@ -168,7 +168,6 @@ export async function checkAndVerifyUserToken(req: Request, res: Response): Prom
       const user = await User.findOne({
         where: { email: decoded.userEmail }
       })
-      console.log("user", user)
       res.json({ userDetail: user })
 
       // req.User = { UserId: User?.dataValues.UserId }

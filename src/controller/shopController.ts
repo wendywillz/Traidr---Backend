@@ -1,6 +1,8 @@
 import ShopModel from '../model/shop';
 import { Request, Response } from 'express';
 import User from '../model/user';
+
+
 export const createNewShop = async (req: Request, res: Response): Promise<void> => {
   try {
     console.log("req.body", req.body)
@@ -26,7 +28,8 @@ export const createNewShop = async (req: Request, res: Response): Promise<void> 
       res.json({ userError: 'User not found' });
     }
     else {
-      await user.update({ isSeller: true });
+      await user.update({isSeller: true})
+      console.log("newShop", newShop)
       res.json({ shopCreated: newShop })
     }
       // console.log("newShop", newShop)
@@ -36,3 +39,16 @@ export const createNewShop = async (req: Request, res: Response): Promise<void> 
     res.json({ error: 'Error adding shop' });
   }
 };
+
+export const getShopById = async (req: Request, res: Response): Promise<void> => { 
+  try {
+    console.log("req", req.body, req.params)
+    const { shopId } = req.params;
+    const shop = await ShopModel.findOne({ where: { shopId } });
+    console.log("shops", shop?.dataValues)
+    res.json({ shop });
+  } catch (error) {
+    console.log('Error getting products:', error)
+    res.json({ error: 'Error getting products' });
+  }
+}
