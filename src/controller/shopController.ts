@@ -5,7 +5,6 @@ import User from '../model/user';
 
 export const createNewShop = async (req: Request, res: Response): Promise<void> => {
   try {
-    console.log("req.body", req.body)
     const { shopName, shopDescription, shopCurrency, shopCategory, shopCountry,
       shopStreetAddress,
       shopCity,
@@ -29,7 +28,6 @@ export const createNewShop = async (req: Request, res: Response): Promise<void> 
     }
     else {
       await user.update({isSeller: true})
-      console.log("newShop", newShop)
       res.json({ shopCreated: newShop })
     }
       // console.log("newShop", newShop)
@@ -42,10 +40,8 @@ export const createNewShop = async (req: Request, res: Response): Promise<void> 
 
 export const getShopById = async (req: Request, res: Response): Promise<void> => { 
   try {
-    console.log("req", req.body, req.params)
     const { shopId } = req.params;
     const shop = await ShopModel.findOne({ where: { shopId } });
-    console.log("shops", shop?.dataValues)
     res.json({ shop });
   } catch (error) {
     console.log('Error getting products:', error)

@@ -38,7 +38,7 @@ Product.init(
       allowNull: true,
     },
     productImage: {
-      type: DataTypes.STRING,
+      type: DataTypes.ARRAY(DataTypes.STRING),
       allowNull: false,
     },
     productVideo: {
