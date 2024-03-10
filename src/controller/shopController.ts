@@ -48,3 +48,13 @@ export const getShopById = async (req: Request, res: Response): Promise<void> =>
     res.json({ error: 'Error getting products' });
   }
 }
+export const getShopByUId = async (req: Request, res: Response): Promise<void> => { 
+  try {
+    const { shopId } = req.params;
+    const shop = await ShopModel.findOne({ where: { shopId } });
+    res.json({ shop });
+  } catch (error) {
+    console.log('Error getting products:', error)
+    res.json({ error: 'Error getting products' });
+  }
+}
