@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { hashPassword } from '../utils/password';
 import { googleSignIn } from '../utils/googleAuth';
+import { exchangeCodeForTokens } from '../utils/exchangeCodeForTokens';
 import User from "../model/user";
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
@@ -32,7 +33,7 @@ export const createUser = async (req: Request, res: Response): Promise<void> => 
     const newUser = await User.create({
         name,
         email,
-      password: hashedPassword,
+        password: hashedPassword,
         hearAboutUs
     });
     
@@ -105,25 +106,48 @@ export const createGoogleUser = async (req: Request, res: Response): Promise<voi
                     res.json({ 
                     userExistError: 'User already exists' 
                 });
+                return;
             }
     
             // Create a new user with Google Sign-In data
-            const newUser = new User({
+            await User.create({
                 username: userData.username,
                 email: userData.email,
                 googleSignIn: true, // Marking this user as signed in with Google
             });
-            await newUser.save();
     
             res.json({
-                googleSignInSuccessful: 'Google Sign-In user created successfully',
-                
+                googleSignInSuccessful: 'Google Sign-In user created successfully',        
             });
         } catch (error) {
             console.error('Error creating Google Sign-In user:', error);
             res.json({ internalServerError: 'Server error' });
         }
     };
+
+
+// Controller function for handling Google OAuth callback
+export const handleGoogleCallback = async (req: Request, res: Response) => {
+    try {
+        const code  = req.query.code as string; // Get the authorization code from the query parameters
+
+        if (!code) {
+          throw new Error('Authorization code is missing');
+      }
+        // Exchange the authorization code for access tokens
+        const { id_token } = await exchangeCodeForTokens(code);
+
+        console.log('ID Token:', id_token);
+
+        await googleSignIn(id_token);
+        res.redirect('/dashboard');
+    } catch (error) {
+        console.error('Error handling Google callback:', error);
+        res.json({ error: 'Internal server error' });
+    }
+};
+
+
 export const loginUser = async (req: Request, res: Response): Promise<void> => {
  try {
    const { email, password } = req.body;
