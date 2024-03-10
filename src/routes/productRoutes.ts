@@ -1,5 +1,5 @@
 import express from 'express';
-import { addNewProduct, getProductsByShopId, getAllProducts } from '../controller/productController';
+import { addNewProduct, getProductsByShopId, getAllProducts, getProductById } from '../controller/productController';
 import multer from 'multer';
 import path from 'node:path';
 import fs from 'node:fs';
@@ -31,5 +31,7 @@ const upload = multer({ storage: storage });
 router.post('/add-product/:shopId', upload.fields([{ name: 'productPhoto', maxCount: 3 }, { name: 'productVideo', maxCount: 1 }]), addNewProduct);
 router.get('/get-products/:shopId', getProductsByShopId); 
 router.get('/get-all-products', getAllProducts); 
+router.get('/get-product/:productId', getProductById);
+
 
 export default router;
