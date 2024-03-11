@@ -13,7 +13,6 @@ package-lock.json
 **yarn
 **.yarn
 dist
-public/*
 .yarn
 node_modules
 dist
