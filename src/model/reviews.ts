@@ -9,7 +9,7 @@ class Review extends Model {
  public reviewContent!: string;
  public name!: string;
  public shopName!: string;
- public createdAt!: Date;
+ public date!: Date;
 
  // eslint-disable-next-line @typescript-eslint/no-explicit-any
  static associate(models: any): void {
