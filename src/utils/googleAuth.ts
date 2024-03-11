@@ -19,7 +19,6 @@ export const googleSignIn = async (googleToken: string): Promise<{ email: string
         // Get the payload of the verified token, which contains user information
         const payload: TokenPayload | undefined = ticket.getPayload();
 
-        // Ensure the payload contains email and name fields
         if (!payload?.email || !payload?.name) {
             throw new Error('Failed to retrieve user information from Google token');
         }

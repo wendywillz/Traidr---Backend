@@ -37,8 +37,8 @@ Product.init(
       type: DataTypes.STRING,
       allowNull: true,
     },
-    productImage: {
-      type: DataTypes.STRING,
+    productImages: {
+      type: DataTypes.ARRAY(DataTypes.STRING),
       allowNull: false,
     },
     productVideo: {
@@ -50,7 +50,7 @@ Product.init(
       allowNull: false,
     },
     shopId: {
-      type: DataTypes.STRING,
+      type: DataTypes.UUID,
       allowNull: false,
       references: {
         model: 'Shops',
