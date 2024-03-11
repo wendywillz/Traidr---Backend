@@ -9,7 +9,7 @@ class Review extends Model {
  public reviewContent!: string;
  public name!: string;
  public shopName!: string;
- public createdAt!: Date;
+ public date!: Date;
 
  // eslint-disable-next-line @typescript-eslint/no-explicit-any
  static associate(models: any): void {
@@ -50,6 +50,11 @@ Review.init(
     shopName: {
       type: DataTypes.STRING,
       allowNull: false,
+    },
+    date: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      defaultValue: DataTypes.NOW,
     },
  },
  {
