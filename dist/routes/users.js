@@ -10,6 +10,8 @@ const router = express_1.default.Router();
 router.post('/createUser', userController_1.createUser);
 // Endpoint for creating a new user using Google Sign-In
 router.post('/createGoogleUser', userController_1.createGoogleUser);
+// Endpoint for handling Google OAuth callback
+router.get('/auth/google/callback', userController_1.handleGoogleCallback);
 // Enpoint for making payment
 router.post('/save-payment', userController_1.savePayment);
 // Enpoint forchange password
