@@ -1,6 +1,6 @@
 import { Sequelize } from 'sequelize'
 
-const DB = new Sequelize('hvkqzhdo','hvkqzhdo','0BKcywgd17oNtAAcn8iEjGXt4NwaRB8N', 
+const DB = new Sequelize('wqsmzjza','wqsmzjza','f-_9BIwS8-atgSnUKRAvJZ_7BPti-uAM', 
   {
     host: "trumpet.db.elephantsql.com",
     dialect: "postgres",
@@ -16,4 +16,4 @@ const DB = new Sequelize('hvkqzhdo','hvkqzhdo','0BKcywgd17oNtAAcn8iEjGXt4NwaRB8N
   }
 );
 
-export default DB;
+export default DB;
