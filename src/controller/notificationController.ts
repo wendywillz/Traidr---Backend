@@ -29,18 +29,3 @@ export const createNewNotification = async (req: Request, res: Response): Promis
     res.status(500).json({ error: 'Error creating Notification' });
   }
 };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
