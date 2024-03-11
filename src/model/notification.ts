@@ -32,7 +32,7 @@ Notification.init(
       allowNull: true,
     },
     userId: {
-      type: DataTypes.STRING,
+      type: DataTypes.UUID,
       allowNull: false,
       references: {
         model: 'Shops',
