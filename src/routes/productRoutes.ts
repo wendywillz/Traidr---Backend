@@ -3,7 +3,6 @@ import { addNewProduct, getProductsByShopId, getAllProducts, getProductById } fr
 import multer from 'multer';
 import path from 'node:path';
 import fs from 'node:fs';
-import { customersReviews } from '../controller/reviewsController';
 
 const router = express.Router();
 
