@@ -1,4 +1,4 @@
-export const shopCategories = [
+export const productCategories = [
     "Home Appliances",
     "Antiques",
     "Furniture",

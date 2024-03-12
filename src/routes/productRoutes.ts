@@ -3,6 +3,7 @@ import { addNewProduct, getProductsByShopId, getAllProducts, getProductById } fr
 import multer from 'multer';
 import path from 'node:path';
 import fs from 'node:fs';
+import { getAllProductsCategory } from "../controller/categories";
 
 const router = express.Router();
 
@@ -27,7 +28,7 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 
-
+router.get("/get-products-categories", getAllProductsCategory);
 router.post('/add-product/:shopId', upload.fields([{ name: 'productPhoto', maxCount: 3 }, { name: 'productVideo', maxCount: 1 }]), addNewProduct);
 router.get('/get-products/:shopId', getProductsByShopId); 
 router.get('/get-all-products', getAllProducts); 
