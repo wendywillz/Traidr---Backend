@@ -91,17 +91,17 @@ export const getAllProducts = async (req: Request, res: Response): Promise<void>
 
 export const getProductById = async (req: Request, res: Response): Promise<void> => {
   try {
-    const productId = (req.params.productId);
+    const productId = Number(req.params.productId);
 
       // Mock product data
-      // const mockProducts = [
-      //   { id: 1, name: 'Product 1', price: 10.99 },
-      //   { id: 2, name: 'Product 2', price: 20.99 },
-      //   { id: 3, name: 'Product 3', price: 30.99 },
-      // ];
-    // const product = mockProducts.find(p => p.id === productId);
+      const mockProducts = [
+        { id: 1, name: 'Product 1', price: 10.99 },
+        { id: 2, name: 'Product 2', price: 20.99 },
+        { id: 3, name: 'Product 3', price: 30.99 },
+      ];
+    const product = mockProducts.find(p => p.id === productId);
 
-    const product = await Product.findByPk(productId);
+    // const product = await Product.findByPk(productId);
 
     if(!product) {
       res.json({ error: 'Product not found' });
