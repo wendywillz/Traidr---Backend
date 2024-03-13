@@ -4,4 +4,5 @@ export const shopCategories = [
     "Furniture",
     "Kids Clothes",
     "Adult Clothes",
+    "New wears"
 ]
