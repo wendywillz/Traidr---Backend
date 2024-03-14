@@ -32,7 +32,7 @@ router.get("/get-products-categories", getAllProductsCategory);
 router.post('/add-product/:shopId', upload.fields([{ name: 'productPhoto', maxCount: 3 }, { name: 'productVideo', maxCount: 1 }]), addNewProduct);
 router.get('/get-products/:shopId', getProductsByShopId); 
 router.get('/get-all-products', getAllProducts); 
-router.get('/product/:productId', getProductById);
+router.get('/get-single-product/:productId', getProductById);
 
 
 export default router;

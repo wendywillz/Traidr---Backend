@@ -3,12 +3,13 @@ import sequelize from '../database/database.config';
 import { v4 as uuidv4 } from 'uuid';
 
 class Review extends Model {
- public reviewId!: number;
+ public reviewId!: string;
  public productId!: string;
- public reviewRating!: number;
- public reviewContent!: string;
- public name!: string;
- public shopName!: string;
+ public reviewRating?: number;
+ public reviewText!: string;
+  public reviewer!: string;
+  public shopName?: string;
+  
  public date!: Date;
 
  // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -21,8 +22,8 @@ class Review extends Model {
 Review.init(
  {
     reviewId: {
-      type: DataTypes.INTEGER,
-      autoIncrement: true,
+     type: DataTypes.UUID,
+      defaultValue: () => uuidv4(),
       primaryKey: true,
       allowNull: false
     },
@@ -37,29 +38,28 @@ Review.init(
     },
     reviewRating: {
       type: DataTypes.INTEGER,
-      allowNull: false,
+      allowNull: true,
     },
-    reviewContent: {
+    reviewText: {
       type: DataTypes.TEXT,
       allowNull: false,
     },
-    name: {
-      type: DataTypes.STRING,
+    reviewer: {
+      type: DataTypes.UUID,
       allowNull: false,
     },
     shopName: {
-      type: DataTypes.STRING,
-      allowNull: false,
+      type: DataTypes.UUID,
+      allowNull: true,
     },
     date: {
       type: DataTypes.DATE,
-      allowNull: false,
-      defaultValue: DataTypes.NOW,
+      allowNull: false
     },
  },
  {
     sequelize,
-    modelName: 'Review',
+    modelName: 'Reviews',
     timestamps: true, 
  }
 );
