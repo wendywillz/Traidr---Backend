@@ -19,7 +19,7 @@ export const addReview = async (req: Request, res: Response) => {
                 where: { email: decoded.userEmail }
             })
            
-
+console.log("user", user?.dataValues)
             // req.User = { UserId: User?.dataValues.UserId }
     
             const { productId } = req.params
@@ -34,7 +34,8 @@ export const addReview = async (req: Request, res: Response) => {
             const reviewCreated = await Review.create({
                 reviewRating,
                 reviewText,
-                reviewer: user?.dataValues.userId,
+                reviewerId: user?.dataValues.userId,
+                reviewerName: user?.dataValues.name,
                 productId,
                 date: new Date().toLocaleDateString()
             });
