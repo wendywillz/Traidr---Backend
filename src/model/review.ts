@@ -7,7 +7,8 @@ class Review extends Model {
  public productId!: string;
  public reviewRating?: number;
  public reviewText!: string;
-  public reviewer!: string;
+  public reviewerId!: string;
+  public reviewerName!: string;
   public shopName?: string;
   
  public date!: Date;
@@ -44,10 +45,14 @@ Review.init(
       type: DataTypes.TEXT,
       allowNull: false,
     },
-    reviewer: {
+    reviewerId: {
       type: DataTypes.UUID,
       allowNull: false,
     },
+    reviewerName: {
+      type: DataTypes.STRING,
+      allowNull: false,
+     }, 
     shopName: {
       type: DataTypes.UUID,
       allowNull: true,
