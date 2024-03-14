@@ -17,6 +17,7 @@ const verifyToken_1 = __importDefault(require("./routes/verifyToken"));
 const shopRoutes_1 = __importDefault(require("./routes/shopRoutes"));
 const notificationRoutes_1 = __importDefault(require("./routes/notificationRoutes"));
 const productRoutes_1 = __importDefault(require("./routes/productRoutes"));
+const review_1 = __importDefault(require("./routes/review"));
 dotenv_1.default.config();
 database_config_1.default.sync()
     .then(() => {
@@ -43,4 +44,5 @@ app.use('/users-otp', otpRoute_1.default);
 app.use('/shop', shopRoutes_1.default);
 app.use('/notification', notificationRoutes_1.default);
 app.use('/products', productRoutes_1.default);
+app.use('/reviews', review_1.default);
 exports.default = app;

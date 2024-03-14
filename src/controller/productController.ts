@@ -4,6 +4,7 @@ import ShopModel from '../model/shop';
 import dotenv from 'dotenv';
 import path from 'node:path';
 import fs from 'node:fs';
+import User from '../model/user';
 dotenv.config();
 
 const BACKEND_URL = process.env.BACKEND_URL;
@@ -91,26 +92,15 @@ export const getAllProducts = async (req: Request, res: Response): Promise<void>
 
 export const getProductById = async (req: Request, res: Response): Promise<void> => {
   try {
-    const productId = Number(req.params.productId);
-
-      // Mock product data
-      const mockProducts = [
-        { id: 1, name: 'Product 1', price: 10.99 },
-        { id: 2, name: 'Product 2', price: 20.99 },
-        { id: 3, name: 'Product 3', price: 30.99 },
-      ];
-    const product = mockProducts.find(p => p.id === productId);
-
-    // const product = await Product.findByPk(productId);
-
-    if(!product) {
-      res.json({ error: 'Product not found' });
-      return;
-    }
-    res.json({product});
-
+    const { productId } = req.params;
+    const productDetails = await Product.findOne({ where: { productId } });
+    const shopDetails = await ShopModel.findOne({ where: { shopId: productDetails?.dataValues.shopId } });
+    const shopOwner = await User.findOne({ where: { userId: shopDetails?.dataValues.shopOwner } });
+    const similarProducts = await Product.findAll({ where: { productCategory: productDetails?.dataValues.productCategory } });
+    const product = { ...productDetails?.dataValues, shopName: shopDetails?.dataValues.shopName, shopOwner: shopOwner?.dataValues.name, similarProducts: similarProducts, shopOwnerEmail: shopOwner?.dataValues.email};
+    
+    res.json({ product });
   } catch (error) {
-    console.error('Error getting product by ID:', error);
+    console.log('Error getting products:', error)
     res.json({ error: 'Error getting products' });
-  }
-}
+  }}
