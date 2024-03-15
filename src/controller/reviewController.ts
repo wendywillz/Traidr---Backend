@@ -65,6 +65,7 @@ export const fetchReviewsByProductId = async (req: Request, res: Response): Prom
         if (reviews.length === 0) {
             res.status(404).json({ message: 'No reviews found for this product.' });
         } else {
+            console.log("reviews", reviews)
             res.json({ reviews });
         }
     } catch (error) {
