@@ -159,6 +159,7 @@ export const loginUser = async (req: Request, res: Response): Promise<void> => {
       userNotFoundError: 'User not found'
     })
   } else {
+    
     const isPasswordValid = await bcrypt.compare(password, existingUser.dataValues.password)
 
     if (!isPasswordValid) {
@@ -166,12 +167,21 @@ export const loginUser = async (req: Request, res: Response): Promise<void> => {
         inValidPassword: 'Invalid password'
       })
     } else {
-
+     
       const token = jwt.sign({ userEmail: existingUser.dataValues.email }, secret, { expiresIn: '1h' })
-      
-      res.json({
-        successfulLogin: token
+const successfulLogin = {
+      token,
+        userId: existingUser?.dataValues.userId,
+        name: existingUser?.dataValues.name,
+        email: existingUser?.dataValues.email,
+        isAdmin: existingUser?.dataValues.isAdmin,
+        isSeller: existingUser?.dataValues.isSeller,
+        isVerified: existingUser?.dataValues.isVerified
+        } 
+        res.json({
+        successfulLogin
       })
+      
     }
   }
  } catch (error) {
@@ -185,20 +195,27 @@ export async function checkAndVerifyUserToken(req: Request, res: Response): Prom
     // const token = req.cookies.token
     const token = req.headers.authorization?.split(' ')[1]
     if (!token) {
-      console.log("no token")
+    
       res.json({ noTokenError: 'Unauthorized - Token not provided' })
     } else {
       const decoded = jwt.verify(token, secret) as { userEmail: string }
       const user = await User.findOne({
         where: { email: decoded.userEmail }
       })
-      res.json({ userDetail: user })
+      const userDetail = {
+        userId: user?.dataValues.userId,
+        name: user?.dataValues.name,
+        email: user?.dataValues.email,
+        isAdmin: user?.dataValues.isAdmin,
+        isSeller: user?.dataValues.isSeller,
+        isVerified: user?.dataValues.isVerified
+      }
+      res.json({ userDetail })
 
-      // req.User = { UserId: User?.dataValues.UserId }
+      
     }
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
-    console.log("error VErify", error)
     if (error.name === 'TokenExpiredError') {
       res.json({ tokenExpiredError: 'Unauthorized - Token has expired' })
     } else {
