@@ -5,6 +5,7 @@ import dotenv from 'dotenv';
 import path from 'node:path';
 import fs from 'node:fs';
 import User from '../model/user';
+import { Op } from 'sequelize';
 dotenv.config();
 
 const BACKEND_URL = process.env.BACKEND_URL;
@@ -78,17 +79,7 @@ export const getProductsByShopId = async (req: Request, res: Response): Promise<
   }
 }
 
-export const getAllProducts = async (req: Request, res: Response): Promise<void> => { 
-  try {
 
-    const products = await Product.findAll();
-    console.log("products")
-    res.json({ products });
-  } catch (error) {
-    console.log('Error getting products:', error)
-    res.json({ error: 'Error getting products' });
-  }
-}
 
 export const getProductById = async (req: Request, res: Response): Promise<void> => {
   try {
@@ -104,3 +95,84 @@ export const getProductById = async (req: Request, res: Response): Promise<void>
     console.log('Error getting products:', error)
     res.json({ error: 'Error getting products' });
   }}
+
+  export const getAllProducts = async (req: Request, res: Response): Promise<void> => { 
+    try {
+  
+      const page = parseInt(req.query.page as string) || 1;
+      const pageSize = parseInt(req.query.pageSize as string) || 10;
+      const offset = (page - 1) * pageSize;
+      
+  
+      const { minPrice, maxPrice, price, search, category, sort } = req.query;
+   
+      let whereCondition: any = {};
+  
+      if (price){
+        whereCondition.productPrice = price
+  
+        } else if(minPrice && maxPrice){
+    whereCondition.productPrice = {
+      [Op.between]: [minPrice,maxPrice]
+  
+    };
+  } else if (maxPrice ) {
+        whereCondition.productPrice = {
+          [Op.lte]: +maxPrice
+  
+        };
+      } else if (minPrice ) {
+        whereCondition.productPrice = {
+          [Op.gte]: +minPrice
+        };
+      }
+    
+  if(search){
+    whereCondition.productTitle = {
+      [Op.iLike] : `%${search}%`
+    }
+  }
+  
+    if (category){
+      whereCondition.productCategory = {
+      [Op.iLike] : `%${category}`
+      }
+    }
+  
+  
+    let sortOrder: [string, string] = ["productPrice", "ASC"];
+    
+    if (sort === "high"){
+      sortOrder = [ "productPrice", "DESC" ]
+    }
+  
+    else if ( sort === "low"){
+     sortOrder = ["productPrice", "ASC"] 
+    }
+  
+  if (sort === "most-recent"){
+    sortOrder = [ "updatedAt", "DESC"]
+  }
+  
+  
+      const products = await Product.findAll({
+        where: whereCondition,
+        order: [sortOrder],
+        offset,
+        limit: pageSize, 
+      });
+  
+  
+  
+  console.log(products)
+  
+      res.json(products);
+    } catch (error) {
+      console.error('Error fetching products:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  }
+  
+  
+  
+  
