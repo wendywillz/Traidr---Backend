@@ -16,5 +16,6 @@ router.get('/auth/google/callback', userController_1.handleGoogleCallback);
 router.post('/save-payment', userController_1.savePayment);
 // Enpoint forchange password
 router.post('/change-password', userController_1.changePassword);
+router.get('/get-user-shopId', userController_1.getUserShopId);
 router.post('/login', userController_1.loginUser);
 exports.default = router;

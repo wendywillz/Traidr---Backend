@@ -10,6 +10,7 @@ import { transporter } from '../utils/emailSender';
 import Payment from '../model/payment';
 import { config } from 'dotenv';
 import { token } from "morgan";
+import Shop from "../model/shop";
 
 config();
 const secret: string = process.env.secret as string;
@@ -283,5 +284,23 @@ export const changePassword = async (req: Request, res: Response): Promise<void>
   } catch (error) {
     console.error('Error sending email:', error);
     res.status(500).json({ interalServerError: 'Failed to send OTP' });
+  }
+}
+
+export const getUserShopId = async (req: Request, res: Response) => { 
+  try {
+    const token = req.headers.authorization?.split(' ')[1];
+    if (!token) {
+      res.json({ noTokenError: 'Unauthorized - Token not provided' });
+    }
+    else {
+      const decoded = jwt.verify(token, secret) as { userEmail: string };
+      const user = await User.findOne({ where: { email: decoded.userEmail } });
+      const shopDetails = await Shop.findOne({ where: { shopOwner: user?.userId } });  
+      res.json({ shopId: shopDetails?.dataValues.shopId });
+    }
+  } catch (error) {
+    console.error('Error getting user shop ID:', error);
+    res.json({ message: 'Error getting user shop ID' });
   }
 }
