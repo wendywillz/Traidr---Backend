@@ -120,7 +120,7 @@ export const getProductById = async (req: Request, res: Response): Promise<void>
         whereCondition.productPrice = {
           [Op.lte]: +maxPrice
   
-        };
+        } ;
       } else if (minPrice ) {
         whereCondition.productPrice = {
           [Op.gte]: +minPrice
@@ -130,7 +130,7 @@ export const getProductById = async (req: Request, res: Response): Promise<void>
   if(search){
     whereCondition.productTitle = {
       [Op.iLike] : `%${search}%`
-    }
+    } 
   }
   
     if (category){
@@ -164,9 +164,9 @@ export const getProductById = async (req: Request, res: Response): Promise<void>
   
   
   
-  console.log(products)
+  console.log(`PRODUCTS!!!`, products)
   
-      res.json(products);
+      res.json({products});
     } catch (error) {
       console.error('Error fetching products:', error);
       res.status(500).json({ error: 'Internal server error' });
