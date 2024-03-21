@@ -162,9 +162,7 @@ export const getProductById = async (req: Request, res: Response): Promise<void>
         limit: pageSize, 
       });
   
-  
-  
-  console.log(`PRODUCTS!!!`, products)
+
   
       res.json({products});
     } catch (error) {
