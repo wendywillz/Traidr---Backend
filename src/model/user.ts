@@ -16,6 +16,8 @@ class User extends Model {
   public resetPasswordToken!: string | null;
   public isAdmin!: boolean;
   public isSeller!: boolean;
+  public age!: string;
+  public gender!: string;
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   static associate(models: any): void {
@@ -87,6 +89,14 @@ User.init(
       allowNull: false,
       defaultValue: false,
     },
+    age: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    gender: {
+    type: DataTypes.STRING,
+    allowNull: false 
+  }
   },
   {
     sequelize,

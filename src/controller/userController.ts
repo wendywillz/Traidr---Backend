@@ -18,7 +18,7 @@ const secret: string = process.env.secret as string;
 export const createUser = async (req: Request, res: Response): Promise<void> => {
   try {
 
-    const { name, email, password, hearAboutUs } = req.body;
+    const { name, email, password, hearAboutUs, age, gender } = req.body;
 
     const existingUser = await User.findOne({ where: { email } });
     if (existingUser) {
@@ -35,7 +35,9 @@ export const createUser = async (req: Request, res: Response): Promise<void> => 
         name,
         email,
         password: hashedPassword,
-        hearAboutUs
+        hearAboutUs,
+        age,
+        gender
     });
     
 
@@ -304,3 +306,41 @@ export const getUserShopId = async (req: Request, res: Response) => {
     res.json({ message: 'Error getting user shop ID' });
   }
 }
+
+export const getUserDemographicsByAge = async (req: Request, res: Response): Promise<void> => {
+  try {
+      // Define age ranges
+      const ageRanges = [
+          { min: 18, max: 24 },
+          { min: 25, max: 33 },
+          { min: 34, max: 44 },
+          { min: 45, max: Number.MAX_SAFE_INTEGER } // Set a very large number as maximum for 45 & above
+      ];
+
+      // Fetch users from the database
+      const users = await User.findAll();
+
+      // Initialize demographics report with zero counts for each age range
+      const demographicsReport = ageRanges.map(range => ({
+          ageRange: `${range.min}-${range.max === Number.MAX_SAFE_INTEGER ? 'above' : range.max}`,
+          count: 0
+      }));
+
+      // Count users in each age range
+      users.forEach(user => {
+          const age = parseInt(user.age);
+          for (const range of ageRanges) {
+              if (age >= range.min && age <= range.max) {
+                  const index = ageRanges.indexOf(range);
+                  demographicsReport[index].count++;
+                  break; // No need to check further ranges
+              }
+          }
+      });
+
+      res.json({ demographicsReport });
+  } catch (error) {
+      console.error('Error fetching user demographics:', error);
+      res.status(500).json({ error: 'Internal server error' });
+  }
+};
