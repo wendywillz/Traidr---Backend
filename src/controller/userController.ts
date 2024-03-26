@@ -10,6 +10,7 @@ import { transporter } from '../utils/emailSender';
 import Payment from '../model/payment';
 import { config } from 'dotenv';
 import { token } from "morgan";
+import Shop from "../model/shop";
 
 config();
 const secret: string = process.env.secret as string;
@@ -17,7 +18,7 @@ const secret: string = process.env.secret as string;
 export const createUser = async (req: Request, res: Response): Promise<void> => {
   try {
 
-    const { name, email, password, hearAboutUs } = req.body;
+    const { name, email, password, hearAboutUs, age, gender } = req.body;
 
     const existingUser = await User.findOne({ where: { email } });
     if (existingUser) {
@@ -34,7 +35,9 @@ export const createUser = async (req: Request, res: Response): Promise<void> => 
         name,
         email,
         password: hashedPassword,
-        hearAboutUs
+        hearAboutUs,
+        age,
+        gender
     });
     
 
@@ -159,6 +162,7 @@ export const loginUser = async (req: Request, res: Response): Promise<void> => {
       userNotFoundError: 'User not found'
     })
   } else {
+    
     const isPasswordValid = await bcrypt.compare(password, existingUser.dataValues.password)
 
     if (!isPasswordValid) {
@@ -166,12 +170,21 @@ export const loginUser = async (req: Request, res: Response): Promise<void> => {
         inValidPassword: 'Invalid password'
       })
     } else {
-
+     
       const token = jwt.sign({ userEmail: existingUser.dataValues.email }, secret, { expiresIn: '1h' })
-      
-      res.json({
-        successfulLogin: token
+const successfulLogin = {
+      token,
+        userId: existingUser?.dataValues.userId,
+        name: existingUser?.dataValues.name,
+        email: existingUser?.dataValues.email,
+        isAdmin: existingUser?.dataValues.isAdmin,
+        isSeller: existingUser?.dataValues.isSeller,
+        isVerified: existingUser?.dataValues.isVerified
+        } 
+        res.json({
+        successfulLogin
       })
+      
     }
   }
  } catch (error) {
@@ -185,20 +198,27 @@ export async function checkAndVerifyUserToken(req: Request, res: Response): Prom
     // const token = req.cookies.token
     const token = req.headers.authorization?.split(' ')[1]
     if (!token) {
-      console.log("no token")
+    
       res.json({ noTokenError: 'Unauthorized - Token not provided' })
     } else {
       const decoded = jwt.verify(token, secret) as { userEmail: string }
       const user = await User.findOne({
         where: { email: decoded.userEmail }
       })
-      res.json({ userDetail: user })
+      const userDetail = {
+        userId: user?.dataValues.userId,
+        name: user?.dataValues.name,
+        email: user?.dataValues.email,
+        isAdmin: user?.dataValues.isAdmin,
+        isSeller: user?.dataValues.isSeller,
+        isVerified: user?.dataValues.isVerified
+      }
+      res.json({ userDetail })
 
-      // req.User = { UserId: User?.dataValues.UserId }
+      
     }
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
-    console.log("error VErify", error)
     if (error.name === 'TokenExpiredError') {
       res.json({ tokenExpiredError: 'Unauthorized - Token has expired' })
     } else {
@@ -268,3 +288,59 @@ export const changePassword = async (req: Request, res: Response): Promise<void>
     res.status(500).json({ interalServerError: 'Failed to send OTP' });
   }
 }
+
+export const getUserShopId = async (req: Request, res: Response) => { 
+  try {
+    const token = req.headers.authorization?.split(' ')[1];
+    if (!token) {
+      res.json({ noTokenError: 'Unauthorized - Token not provided' });
+    }
+    else {
+      const decoded = jwt.verify(token, secret) as { userEmail: string };
+      const user = await User.findOne({ where: { email: decoded.userEmail } });
+      const shopDetails = await Shop.findOne({ where: { shopOwner: user?.userId } });  
+      res.json({ shopId: shopDetails?.dataValues.shopId });
+    }
+  } catch (error) {
+    console.error('Error getting user shop ID:', error);
+    res.json({ message: 'Error getting user shop ID' });
+  }
+}
+
+export const getUserDemographicsByAge = async (req: Request, res: Response): Promise<void> => {
+  try {
+      // Define age ranges
+      const ageRanges = [
+          { min: 18, max: 24 },
+          { min: 25, max: 33 },
+          { min: 34, max: 44 },
+          { min: 45, max: Number.MAX_SAFE_INTEGER } // Set a very large number as maximum for 45 & above
+      ];
+
+      // Fetch users from the database
+      const users = await User.findAll();
+
+      // Initialize demographics report with zero counts for each age range
+      const demographicsReport = ageRanges.map(range => ({
+          ageRange: `${range.min}-${range.max === Number.MAX_SAFE_INTEGER ? 'above' : range.max}`,
+          count: 0
+      }));
+
+      // Count users in each age range
+      users.forEach(user => {
+          const age = parseInt(user.age);
+          for (const range of ageRanges) {
+              if (age >= range.min && age <= range.max) {
+                  const index = ageRanges.indexOf(range);
+                  demographicsReport[index].count++;
+                  break; // No need to check further ranges
+              }
+          }
+      });
+
+      res.json({ demographicsReport });
+  } catch (error) {
+      console.error('Error fetching user demographics:', error);
+      res.status(500).json({ error: 'Internal server error' });
+  }
+};

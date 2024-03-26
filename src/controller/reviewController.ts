@@ -1,32 +1,52 @@
 import { Request, Response } from 'express';
 import Review from '../model/review';
+import jwt from 'jsonwebtoken';
+import { config } from 'dotenv';
+import User from '../model/user';
 
-export const customersReviews = async (req: Request, res: Response) => {
+config();
+const secret: string = process.env.secret as string;
+
+export const addReview = async (req: Request, res: Response) => {
     try {
-        const { reviewRating, reviewContent, name, shopName, date } = req.body;
+        const token = req.headers.authorization?.split(' ')[1]
+        if (!token) {
+            console.log("no token")
+            res.json({ noTokenError: 'Unauthorized - Token not provided' })
+        } else {
+            const decoded = jwt.verify(token, secret) as { userEmail: string }
+            const user = await User.findOne({
+                where: { email: decoded.userEmail }
+            })
+           
+console.log("user", user?.dataValues)
+            // req.User = { UserId: User?.dataValues.UserId }
+    
+            const { productId } = req.params
+            const { reviewRating, reviewText} = req.body;
 
-        if (reviewRating && (reviewRating < 1 || reviewRating > 5)) {
-            return res.status(400).json({
-                error: 'Invalid review rating'
+            if (reviewRating && (reviewRating < 1 || reviewRating > 5)) {
+                return res.json({
+                    errorCreating: 'Invalid review rating'
+                });
+            }
+        
+            const reviewCreated = await Review.create({
+                reviewRating,
+                reviewText,
+                reviewerId: user?.dataValues.userId,
+                reviewerName: user?.dataValues.name,
+                productId,
+                date: new Date().toLocaleDateString()
             });
-        }
-        
-        const review = await Review.create({
-            reviewRating,
-            reviewContent,
-            name,
-            shopName,
-            date
-        });
-
-        res.status(201).json({
-            message: 'Review created successfully',
-            review: review
-        });
-        
+            console.log('Review created:', reviewCreated);
+            res.json({
+                reviewCreated: 'Review submitted successfully',
+            });
+        } 
     } catch (error) {
-        console.error('Error creating review:', error);
-        res.status(500).json({
+        console.log('Error creating review:', error);
+        res.json({
             errorMessage: 'Internal server error'
         });
     }
@@ -45,6 +65,7 @@ export const fetchReviewsByProductId = async (req: Request, res: Response): Prom
         if (reviews.length === 0) {
             res.status(404).json({ message: 'No reviews found for this product.' });
         } else {
+            console.log("reviews", reviews)
             res.json({ reviews });
         }
     } catch (error) {
