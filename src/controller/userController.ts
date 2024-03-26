@@ -211,7 +211,11 @@ export async function checkAndVerifyUserToken(req: Request, res: Response): Prom
         email: user?.dataValues.email,
         isAdmin: user?.dataValues.isAdmin,
         isSeller: user?.dataValues.isSeller,
-        isVerified: user?.dataValues.isVerified
+        isVerified: user?.dataValues.isVerified,
+        gender: user?.dataValues.gender,
+        age: user?.dataValues.age,
+        address: user?.dataValues.address,
+        shopName: user?.dataValues.shopName
       }
       res.json({ userDetail })
 
@@ -344,3 +348,34 @@ export const getUserDemographicsByAge = async (req: Request, res: Response): Pro
       res.status(500).json({ error: 'Internal server error' });
   }
 };
+
+export const updateUser = async(req: Request, res:Response)=>{
+  const userId = req.params.userid
+  const {firstName, lastName, email, phoneNumber, gender, dateOfBirth, address, shopName} = req.body
+  const user = await User.findByPk(userId)
+  if(!user){
+    console.log(`error getting user of id : ${userId}`);
+    res.json({
+      message: `Error getting user`
+    })
+  }
+  // let convertedAge = Date.parse(dateOfBirth)
+  let calculatedAge = Math.trunc((Date.now() - Date.parse(dateOfBirth))/31557600000)
+  try {
+    const updatedUser = await user?.update({
+      name: `${firstName} ${lastName}`,
+      email: email,
+      phoneNumber: phoneNumber,
+      gender: gender,
+      age: calculatedAge,
+      address: address,
+      shopName: shopName
+    })
+    if(updatedUser){
+      res.json({success: `User updated successfully`})
+    }
+  } catch (error) {
+    console.log(`Error updatinge user. Reason: ${error}`);
+  }
+ await user?.save({fields:['name', 'email', 'phoneNumber', 'gender', 'address', 'shopName']})
+}
