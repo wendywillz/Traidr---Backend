@@ -18,4 +18,6 @@ router.post('/save-payment', userController_1.savePayment);
 router.post('/change-password', userController_1.changePassword);
 router.get('/get-user-shopId', userController_1.getUserShopId);
 router.post('/login', userController_1.loginUser);
+//Endpoint for updating users
+router.post(`/edit-profile/:userid`, userController_1.updateUser);
 exports.default = router;

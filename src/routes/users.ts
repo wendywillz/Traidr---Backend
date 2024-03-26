@@ -1,5 +1,5 @@
 import express from "express";
-import { createUser, createGoogleUser, loginUser, savePayment, changePassword, handleGoogleCallback, getUserShopId } from '../controller/userController';
+import { createUser, createGoogleUser, loginUser, savePayment, changePassword, handleGoogleCallback, getUserShopId, updateUser } from '../controller/userController';
 
 const router = express.Router();
 
@@ -23,5 +23,7 @@ router.post('/change-password', changePassword);
 router.get('/get-user-shopId', getUserShopId);
 router.post('/login', loginUser);
 
+//Endpoint for updating users
+router.post(`/edit-profile/:userid`, updateUser)
 
 export default router;
