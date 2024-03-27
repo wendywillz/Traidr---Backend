@@ -14,9 +14,10 @@ import notificationRouter from './routes/notificationRoutes'
 import productRouter from './routes/productRoutes'
 import reviewRouter from './routes/review'
 import adminRouter from './routes/adminRoutes'
+import cartRouter from './routes/cartRoutes'
 dotenv.config();
 
-DB.sync()
+DB.sync({force:true})
 .then(() => {
    console.log("Database has been connected")
 }).catch((error) => {
@@ -46,6 +47,7 @@ app.use('/notification', notificationRouter )
 app.use('/products', productRouter);
 app.use('/reviews', reviewRouter);
 app.use('/admin', adminRouter)
+app.use('/cart', cartRouter)
 
 
 
