@@ -21,8 +21,8 @@ const createNewCart = async (currentUserId: string)=>{
 
 //add to cart would execute on a post request from the frontend
 export const addToCart = async(req:Request, res:Response)=>{
-    const currentProductId = req.params.id
-    const {currentUserId, productQuantity,} = req.body
+    const currentProductId = req.params.productId
+    const {currentUserId} = req.body
     
     const currentProduct = await Product.findByPk(currentProductId)
     if(!currentProduct){
@@ -32,13 +32,13 @@ export const addToCart = async(req:Request, res:Response)=>{
 
     if(!existingUserCart){
         const newUserCart = await createNewCart(currentUserId)
-        const newUserCartId = newUserCart.id
+        const newUserCartId = newUserCart.cartId
         try {
             const newCartItem = await CartItem.create({
                 cartId: newUserCartId,
                 userId: currentUserId,
                 productId: currentProductId,
-                productQuantity: productQuantity
+                // productQuantity: productQuantity
             })
         } catch (error) {
             res.json({errorMessage: `error creating cartItem. Reason: ${error}`})
@@ -47,7 +47,7 @@ export const addToCart = async(req:Request, res:Response)=>{
        //If there is no existing Cart, there would automatically not be any existing cart items.
        }
 
-    const existingUserCartId = existingUserCart?.id
+    const existingUserCartId = existingUserCart?.cartId
     const existingCartItem = await CartItem.findOne({where:{productId: currentProductId}})
 
     if(!existingCartItem){
@@ -56,14 +56,14 @@ export const addToCart = async(req:Request, res:Response)=>{
                 cartId: existingUserCartId,
                 userId: currentUserId,
                 productId: currentProductId,
-                productQuantity: productQuantity
+                // productQuantity: productQuantity
             })
         } catch (error) {
             res.json({errorMessage: `error creating cartItem. Reason: ${error}`})
         }
     } else{
         await existingCartItem.update({
-            productQuantity: productQuantity
+            // productQuantity: productQuantity
         })
     }
 
