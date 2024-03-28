@@ -36,8 +36,4 @@ const DB = new Sequelize('fzuuapxy','fzuuapxy','QRiT7cxPfcXaP-sgvRjSrLZIgnJYxfQY
   }
 );
 
-export default DB;
-
-/*
-APi key: fff263ab-c52e-4f3f-bd2b-b8040dcac78b
-*/
+export default DB;

@@ -11,6 +11,7 @@ import Payment from '../model/payment';
 import { config } from 'dotenv';
 import { token } from "morgan";
 import Shop from "../model/shop";
+import UserActivity from "../model/userActivity";
 
 config();
 const secret: string = process.env.secret as string;
@@ -332,7 +333,7 @@ export const getUserDemographicsByAge = async (req: Request, res: Response): Pro
 
       // Count users in each age range
       users.forEach(user => {
-          const age = parseInt(user.age);
+          const age = parseInt(user.dataValues.age);
           for (const range of ageRanges) {
               if (age >= range.min && age <= range.max) {
                   const index = ageRanges.indexOf(range);
@@ -360,7 +361,7 @@ export const updateUser = async(req: Request, res:Response)=>{
     })
   }
   // let convertedAge = Date.parse(dateOfBirth)
-  let calculatedAge = Math.trunc((Date.now() - Date.parse(dateOfBirth))/31557600000)
+  const calculatedAge = Math.trunc((Date.now() - Date.parse(dateOfBirth))/31557600000)
   try {
     const updatedUser = await user?.update({
       name: `${firstName} ${lastName}`,
@@ -378,4 +379,36 @@ export const updateUser = async(req: Request, res:Response)=>{
     console.log(`Error updatinge user. Reason: ${error}`);
   }
  await user?.save({fields:['name', 'email', 'phoneNumber', 'gender', 'address', 'shopName']})
+}
+
+export const getUserActiveDuration = async (req: Request, res: Response) => { 
+  const {userId} = req.query;
+ try {
+    const activities = await UserActivity.findAll({
+      where: { userId },
+    });
+    const totalDuration = activities.reduce((total, activity) => total + (activity.activeDuration || 0), 0);
+    const averageDuration = totalDuration / activities.length;
+    res.json({ averageDuration });
+ } catch (error) {
+    res.json({ error: 'An error occurred while fetching the data.' });
+ }
+}
+
+export const calculateUserActiveDuration = async (req: Request, res: Response) => { 
+  console.log("req.body", req.body)
+  const { userId, activeDuration } = req.body;
+ try {
+   const createActivity = await UserActivity.create({
+      userId,
+      activeDuration
+    })
+   if (!createActivity) {
+     console.log("unable to create active period")
+     res.json({ error: 'An error occurred while creating the active period.' }); 
+   }
+   res.json({ success: 'active period created successfully' });
+ } catch (error) {
+    res.json({ internalServerError: 'internal sever error' });
+ }
 }
