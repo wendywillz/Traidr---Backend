@@ -18,7 +18,7 @@ const secret: string = process.env.secret as string;
 export const createUser = async (req: Request, res: Response): Promise<void> => {
   try {
 
-    const { name, email, password, hearAboutUs, age, gender } = req.body;
+    const { name, email, password, hearAboutUs, dateOfBirth, gender } = req.body;
 
     const existingUser = await User.findOne({ where: { email } });
     if (existingUser) {
@@ -29,14 +29,14 @@ export const createUser = async (req: Request, res: Response): Promise<void> => 
     else {
         //hash the password
       const hashedPassword = await hashPassword(password);
-
+      const calculatedAge = Math.trunc((Date.now() - Date.parse(dateOfBirth))/31557600000)
       //create a new user
     const newUser = await User.create({
         name,
         email,
         password: hashedPassword,
         hearAboutUs,
-        age,
+        age:calculatedAge,
         gender
     });
     
