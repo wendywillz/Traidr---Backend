@@ -3,7 +3,7 @@ import { Sequelize } from 'sequelize'
 
 const DB = new Sequelize('hvkqzhdo','hvkqzhdo','0BKcywgd17oNtAAcn8iEjGXt4NwaRB8N', 
   {
-    host: "flora.db.elephantsql.com",
+    host: "trumpet.db.elephantsql.com",
     dialect: "postgres",
     port: 5432,
     logging: false,
