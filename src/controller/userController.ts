@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Request, Response } from "express";
 import { hashPassword } from '../utils/password';
 import { googleSignIn } from '../utils/googleAuth';
@@ -12,6 +13,7 @@ import { config } from 'dotenv';
 import { token } from "morgan";
 import Shop from "../model/shop";
 import UserActivity from "../model/userActivity";
+import { Op } from "sequelize";
 
 config();
 const secret: string = process.env.secret as string;
@@ -382,33 +384,83 @@ export const updateUser = async(req: Request, res:Response)=>{
 }
 
 export const getUserActiveDuration = async (req: Request, res: Response) => { 
-  const {userId} = req.query;
+
  try {
-    const activities = await UserActivity.findAll({
-      where: { userId },
-    });
-    const totalDuration = activities.reduce((total, activity) => total + (activity.activeDuration || 0), 0);
-    const averageDuration = totalDuration / activities.length;
-    res.json({ averageDuration });
+    function getStartAndEndOfWeek(date: Date) {
+ const day = date.getDay();
+ const startOfWeek = new Date(date);
+ startOfWeek.setDate(date.getDate() - day);
+ const endOfWeek = new Date(date);
+ endOfWeek.setDate(date.getDate() + (6 - day));
+ return { startOfWeek, endOfWeek };
+    }
+   
+
+const currentDate = new Date();
+const { startOfWeek, endOfWeek } = getStartAndEndOfWeek(currentDate);
+const userActivities = await UserActivity.findAll({
+ where: {
+    date: {
+      [Op.between]: [startOfWeek.toISOString().split('T')[0], endOfWeek.toISOString().split('T')[0]]
+    }
+ }
+});
+   const dailyUsage:Record<string, any> = {};
+
+userActivities.forEach(activity => {
+ const date = new Date(activity.date).toLocaleDateString('en-US', { weekday: 'long' });
+ if (!dailyUsage[date]) {
+    dailyUsage[date] = 0;
+ }
+ dailyUsage[date] += activity.activeDuration;
+});
+
+const averageDailyUsage:Record<string, any>  = {};
+Object.keys(dailyUsage).forEach(day => {
+ const totalUsers = userActivities.length;
+ averageDailyUsage[day] = dailyUsage[day] / totalUsers;
+});
+
+console.log(averageDailyUsage);
+
+
  } catch (error) {
     res.json({ error: 'An error occurred while fetching the data.' });
  }
 }
 
 export const calculateUserActiveDuration = async (req: Request, res: Response) => { 
-  console.log("req.body", req.body)
   const { userId, activeDuration } = req.body;
- try {
-   const createActivity = await UserActivity.create({
-      userId,
-      activeDuration
-    })
-   if (!createActivity) {
-     console.log("unable to create active period")
-     res.json({ error: 'An error occurred while creating the active period.' }); 
-   }
-   res.json({ success: 'active period created successfully' });
- } catch (error) {
+  try {
+    const todayDate = Date.now()
+
+    const getDate = new Date(todayDate).toLocaleDateString()
+    
+   const findExistingDuration = await UserActivity.findOne({where:{userId, date:getDate}})
+    if (findExistingDuration) { 
+      const updateActivity = await UserActivity.update({
+        activeDuration: parseInt(activeDuration) + findExistingDuration.activeDuration
+      }, {where: {userId, date:getDate}})
+      if (!updateActivity) {
+        res.json({ error: 'An error occurred while updating the active period.' });
+      }
+      res.json({ success: 'active period updated successfully' });
+    }
+    else {
+      const createActivity = await UserActivity.create({
+        userId,
+        date: getDate,
+        activeDuration: parseInt(activeDuration)
+      })
+     if (!createActivity) {
+       res.json({ error: 'An error occurred while creating the active period.' }); 
+     }
+     res.json({ success: 'active period created successfully' });
+    }
+   
+  } catch (error) {
+    console.log("error", error)
     res.json({ internalServerError: 'internal sever error' });
  }
 }
+

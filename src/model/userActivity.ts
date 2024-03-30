@@ -5,6 +5,7 @@ import {v4 as uuidv4} from 'uuid';
 class UserActivity extends Model{
     public id!: string;
     public userId!: string;
+    public date!: Date;
     public activeDuration!: number
 
     static associate(models: any): void {
@@ -27,6 +28,10 @@ UserActivity.init(
                 model: 'Users',
                 key: 'userId'
             }
+        },
+        date: {
+            type: DataTypes.DATE,
+            allowNull: false
         },
         activeDuration: {
             type: DataTypes.INTEGER,

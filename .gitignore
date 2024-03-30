@@ -19,7 +19,7 @@ dist
 dist-ssr
 database.config.ts
 *.local
-
+database.config.ts
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
