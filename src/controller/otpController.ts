@@ -71,7 +71,8 @@ export const verifyCustomerOtp = async (req: Request, res: Response): Promise<vo
         else {
            const now = new Date()
       if (now > existingCustomer.otpExpirationTime) {
-        res.json({ expiredOtpError: 'OTP has expired' })
+          res.json({ expiredOtpError: 'OTP has expired' })
+          return
       }
 
       await existingCustomer.update({ isVerified: true, otp: null, otpExpiration: null, otpSecret: null })

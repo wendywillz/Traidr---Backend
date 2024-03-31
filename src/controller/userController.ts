@@ -155,7 +155,7 @@ export const loginUser = async (req: Request, res: Response): Promise<void> => {
  try {
    const { email, password } = req.body;
   const existingUser = await User.findOne({ where: { email } })
-
+console.log("existingUser", existingUser)
 
   if (!existingUser) {
     res.json({
