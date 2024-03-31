@@ -18,7 +18,7 @@ import adminRouter from './routes/adminRoutes'
 import cartRouter from './routes/cartRoutes'
 dotenv.config();
 
-DB.sync({force:true})
+DB.sync()
 .then(() => {
    console.log("Database has been connected")
 }).catch((error) => {

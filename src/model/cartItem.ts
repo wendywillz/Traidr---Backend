@@ -10,7 +10,7 @@ class CartItem extends Model {
   
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   static associate(models: any): void {
-    CartItem.hasMany(models.Product, {foreignKey: `productId`, as: 'product'})
+    CartItem.hasMany(models.Product, {foreignKey: `productId`, as: 'product'});
     CartItem.belongsTo(models.Cart, { foreignKey: 'cartId', as: 'cart' });
   }
 }
@@ -27,7 +27,7 @@ CartItem.init(
       type: DataTypes.UUID,
       allowNull: false,
       references: {
-        model: 'Cart',
+        model: 'Carts',
         key: 'cartId', 
       },
     },
@@ -35,7 +35,7 @@ CartItem.init(
       type: DataTypes.UUID,
       allowNull: false,
       references: {
-        model: 'User',
+        model: 'Users',
         key: 'userId', 
       },
     },
@@ -43,7 +43,7 @@ CartItem.init(
         type: DataTypes.UUID,
         allowNull: false,
         references: {
-          model: 'Product',
+          model: 'Products',
           key: 'productId', 
         },
       },

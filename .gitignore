@@ -17,6 +17,7 @@ dist
 node_modules
 dist
 dist-ssr
+database.config.ts
 *.local
 
 # Editor directories and files
