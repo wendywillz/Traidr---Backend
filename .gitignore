@@ -19,7 +19,7 @@ dist
 dist-ssr
 database.config.ts
 *.local
-
+src/database/*
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
@@ -30,3 +30,4 @@ database.config.ts
 *.njsproj
 *.sln
 *.sw?
+src/database

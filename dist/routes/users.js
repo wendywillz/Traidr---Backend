@@ -20,4 +20,8 @@ router.get('/get-user-shopId', userController_1.getUserShopId);
 router.post('/login', userController_1.loginUser);
 //Endpoint for updating users
 router.post(`/edit-profile/:userid`, userController_1.updateUser);
+//Endpoint for calculating user active duration
+router.post('/active-duration', userController_1.calculateUserActiveDuration);
+// Endpoint to get average active user
+router.get('/get-average-user', userController_1.getUserActiveDuration);
 exports.default = router;

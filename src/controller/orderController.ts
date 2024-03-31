@@ -20,7 +20,8 @@ const orders: Order[] = [
   // Add more orders as needed
 ];
 export const completedOrdersByUser = async (req: Request, res: Response): Promise<void> => {
-    try {
+  try {
+      const { userId } =  req.body
       // Group orders by user and filter completed orders
     const completedOrdersByUser: { [user: string]: Order[] } = {};
       orders.forEach(order => {
