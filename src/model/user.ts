@@ -16,8 +16,10 @@ class User extends Model {
   public resetPasswordToken!: string | null;
   public isAdmin!: boolean;
   public isSeller!: boolean;
-  public age!: string;
-  public gender!: string;
+  public gender!: string|null;
+  public age!: number|null;
+  public address!: string|null;
+  public shopName!: string|null;
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   static associate(models: any): void {
@@ -89,14 +91,22 @@ User.init(
       allowNull: false,
       defaultValue: false,
     },
-    age: {
+    gender:{
       type: DataTypes.STRING,
-      allowNull: false,
+      allowNull: true,
     },
-    gender: {
-    type: DataTypes.STRING,
-    allowNull: false 
-  }
+    age:{
+      type: DataTypes.INTEGER,
+      allowNull: true,
+    },
+    address:{
+      type: DataTypes.STRING,
+      allowNull:true,
+    },
+    shopName:{
+      type: DataTypes.STRING,
+      allowNull: true,
+    }
   },
   {
     sequelize,

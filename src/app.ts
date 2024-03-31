@@ -13,6 +13,9 @@ import shopRouter from './routes/shopRoutes'
 import notificationRouter from './routes/notificationRoutes'
 import productRouter from './routes/productRoutes'
 import reviewRouter from './routes/review'
+import completedordersRouter from './routes/orderRoute'
+import adminRouter from './routes/adminRoutes'
+import cartRouter from './routes/cartRoutes'
 dotenv.config();
 
 DB.sync()
@@ -44,6 +47,9 @@ app.use('/shop', shopRouter);
 app.use('/notification', notificationRouter )
 app.use('/products', productRouter);
 app.use('/reviews', reviewRouter);
+app.use('/completedorders', completedordersRouter);
+app.use('/admin', adminRouter)
+app.use('/cart', cartRouter)
 
 
 

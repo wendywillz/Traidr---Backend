@@ -17,8 +17,9 @@ dist
 node_modules
 dist
 dist-ssr
+database.config.ts
 *.local
-
+src/database/*
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
@@ -29,3 +30,4 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+src/database
