@@ -422,7 +422,7 @@ Object.keys(dailyUsage).forEach(day => {
 });
 
 console.log(averageDailyUsage);
-
+res.json({ averageDailyUsage });
 
  } catch (error) {
     res.json({ error: 'An error occurred while fetching the data.' });
