@@ -10,7 +10,6 @@ class Cart extends Model {
   
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   static associate(models: any): void {
-    Cart.hasMany(models.CartItem, {foreignKey: `cartItemId`, as: 'cartItem'})
     Cart.belongsTo(models.User, { foreignKey: 'userId', as: 'user' });
   }
 }
@@ -30,7 +29,7 @@ Cart.init(
         model: 'Users',
         key: 'userId', 
       },
-    },
+    }
   },
   {
     sequelize,
