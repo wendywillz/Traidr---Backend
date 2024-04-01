@@ -17,7 +17,6 @@ export const getAllUsersGender = async (req: Request, res: Response): Promise<vo
 }
 
 export const getAverageUsageTimeForAllUser = async (req: Request, res: Response) => { 
-
  try {
     function getStartAndEndOfWeek(date: Date) {
  const day = date.getDay();
@@ -27,20 +26,18 @@ export const getAverageUsageTimeForAllUser = async (req: Request, res: Response)
  endOfWeek.setDate(date.getDate() + (6 - day));
  return { startOfWeek, endOfWeek };
     }
-   
 
-const currentDate = new Date();
-const { startOfWeek, endOfWeek } = getStartAndEndOfWeek(currentDate);
-const userActivities = await UserActivity.findAll({
+    const currentDate = new Date();
+    const { startOfWeek, endOfWeek } = getStartAndEndOfWeek(currentDate);
+    const userActivities = await UserActivity.findAll({
  where: {
     date: {
       [Op.between]: [startOfWeek.toISOString().split('T')[0], endOfWeek.toISOString().split('T')[0]]
     }
  }
 });
-   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-   const dailyUsage:Record<string, any> = {};
 
+const dailyUsage: Record<string, number> = {};
 userActivities.forEach(activity => {
  const date = new Date(activity.date).toLocaleDateString('en-US', { weekday: 'long' });
  if (!dailyUsage[date]) {
@@ -49,14 +46,26 @@ userActivities.forEach(activity => {
  dailyUsage[date] += activity.activeDuration;
 });
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const averageDailyUsage:Record<string, any>  = {};
+// Calculate average usage time
+const averageDailyUsage: Record<string, number> = {};
 Object.keys(dailyUsage).forEach(day => {
  const totalUsers = userActivities.length;
  averageDailyUsage[day] = dailyUsage[day] / totalUsers;
 });
-console.log("averageDailyUsage", averageDailyUsage)
-res.json({ averageDailyUsage });
+
+// Sort the days of the week
+const sortedDays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+const sortedAverageDailyUsage: Record<string, number> = {};
+sortedDays.forEach(day => {
+ if (averageDailyUsage[day]) {
+    sortedAverageDailyUsage[day] = averageDailyUsage[day];
+ }
+ else {
+      sortedAverageDailyUsage[day] = 0;
+   }
+    
+});
+res.json({ sortedAverageDailyUsage });
 
  } catch (error) {
     res.json({ error: 'An error occurred while fetching the data.' });
@@ -164,8 +173,6 @@ export const getDailyActiveUser = async (req: Request, res: Response) => {
  endOfWeek.setDate(date.getDate() + (6 - day));
  return { startOfWeek, endOfWeek };
     }
-        const check = await LastActive.findAll()
-        console.log("check", check.length)
 const currentDate = new Date();
 const { startOfWeek, endOfWeek } = getStartAndEndOfWeek(currentDate);
 const userActivities = await LastActive.findAll({
@@ -175,24 +182,82 @@ const userActivities = await LastActive.findAll({
     }
  }
 });
-console.log("userActivities", userActivities.length)
-   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-   const dailyActiveUsers:Record<string, any> = {};
+   const dailyActiveUsers:Record<string, number> = {};
 
 userActivities.forEach(activity => {
  const date = new Date(activity.lastActiveAt).toLocaleDateString('en-US', { weekday: 'long' });
  if (!dailyActiveUsers[date]) {
-    dailyActiveUsers[date] = 1; // Initialize the count for this day if it's the first activity
+    dailyActiveUsers[date] = 1; 
  } else {
-    dailyActiveUsers[date]++; // Increment the count for this day if it's not the first activity
+    dailyActiveUsers[date]++; 
  }
 });
-
-console.log("dailyActiveUsers", dailyActiveUsers)
-res.json({ dailyActiveUsers });
+// Sort the days of the week
+const sortedDays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+const sortedDailyActiveUser: Record<string, number> = {};
+sortedDays.forEach(day => {
+ if (dailyActiveUsers[day]) {
+    sortedDailyActiveUser[day] = dailyActiveUsers[day];
+ }
+ else {
+      sortedDailyActiveUser[day] = 0;
+   }
+    
+});
+res.json({ sortedDailyActiveUser });
       
   } catch (error) {
 
     res.status(500).json({ error: 'An error occurred while fetching data.' });
  }
+}
+
+
+export const getMonthlyActiveUser = async (req: Request, res: Response) => {
+    try {
+        function getStartAndEndOfMonth(date: Date) {
+            const startOfMonth = new Date(date.getFullYear(), date.getMonth(), 1);
+            const endOfMonth = new Date(date.getFullYear(), date.getMonth() + 1, 0);
+            return { startOfMonth, endOfMonth };
+        }
+
+        const currentDate = new Date();
+        const { startOfMonth, endOfMonth } = getStartAndEndOfMonth(currentDate);
+        const userActivities = await LastActive.findAll({
+            where: {
+                lastActiveAt: {
+                    [Op.between]: [startOfMonth.toISOString().split('T')[0], endOfMonth.toISOString().split('T')[0]]
+                }
+            }
+        });
+
+        const monthlyActiveUsers: Record<string, number> = {};
+
+        userActivities.forEach(activity => {
+            const date = new Date(activity.lastActiveAt).toLocaleDateString('en-US', { month: 'long' });
+            if (!monthlyActiveUsers[date]) {
+                monthlyActiveUsers[date] = 1;
+            } else {
+                monthlyActiveUsers[date]++;
+            }
+        });
+
+        // Define the order of months
+        const sortedMonths = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+
+        // Sort the monthlyActiveUsers object based on the sortedMonths array
+        const sortedMonthlyActiveUsers: Record<string, number> = {};
+        sortedMonths.forEach(month => {
+            if (monthlyActiveUsers[month]) {
+                sortedMonthlyActiveUsers[month] = monthlyActiveUsers[month];
+            } else {
+                sortedMonthlyActiveUsers[month] = 0; // Include months with no activity
+            }
+        });
+
+        res.json({ sortedMonthlyActiveUsers });
+
+    } catch (error) {
+        res.status(500).json({ error: 'An error occurred while fetching data.' });
+    }
 }
