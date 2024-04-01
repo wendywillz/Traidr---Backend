@@ -3,6 +3,7 @@ import User from "../model/user";
 import { Request, Response } from 'express';
 import UserActivity from "../model/userActivity";
 import jwt from 'jsonwebtoken';
+import LastActive from "../model/lastActive";
 
 const secret = process.env.secret!
 export const getAllUsersGender = async (req: Request, res: Response): Promise<void> =>{
@@ -54,8 +55,7 @@ Object.keys(dailyUsage).forEach(day => {
  const totalUsers = userActivities.length;
  averageDailyUsage[day] = dailyUsage[day] / totalUsers;
 });
-
-console.log(averageDailyUsage);
+console.log("averageDailyUsage", averageDailyUsage)
 res.json({ averageDailyUsage });
 
  } catch (error) {
@@ -93,7 +93,6 @@ export const calculateAverageUsageTimeForAllUser = async (req: Request, res: Res
     }
    
   } catch (error) {
-    console.log("error", error)
     res.json({ internalServerError: 'internal sever error' });
  }
 }
@@ -110,11 +109,9 @@ export async function checkAndVerifyAdminToken(req: Request, res: Response): Pro
       const decoded = jwt.verify(token, secret) as { userEmail: string }
       const checkIfIsAdmin = await User.findOne({where:{email:decoded.userEmail, isAdmin:true}})
         if (!checkIfIsAdmin) {
-            console.log("not admin")
             res.json({ unauthorized: "unauthorized" })
             return 
         }
-        console.log("admin")
        res.json({ success: 'Authorized' }) 
       
 
@@ -128,4 +125,74 @@ export async function checkAndVerifyAdminToken(req: Request, res: Response): Pro
       res.json({ verificationError: 'Unauthorized - Token verification failed' })
     }
   }
+}
+
+export const updateLastActiveAt = async (req: Request, res: Response) => {
+ try {
+     const { userId } = req.body;
+     
+     const checkIfUserHasRecord = await LastActive.findOne({ where: { userId } })
+     if (checkIfUserHasRecord) {
+        await LastActive.update({
+            lastActiveAt: new Date()
+     }, { where: { userId } })
+   
+         res.json({ success: 'Last active time updated successfully' });
+         return
+        
+     }
+     const createRecord = await LastActive.create({
+             userId,
+             lastActiveAt: new Date()
+         })
+         if (createRecord) {
+             res.json({ success: "record created successfully" })
+         }
+   
+ } catch (error) {
+    res.json({internalServerError: 'internalServerError'})
+ }
+};
+
+export const getDailyActiveUser = async (req: Request, res: Response) => {
+    try {
+   function getStartAndEndOfWeek(date: Date) {
+ const day = date.getDay();
+ const startOfWeek = new Date(date);
+ startOfWeek.setDate(date.getDate() - day);
+ const endOfWeek = new Date(date);
+ endOfWeek.setDate(date.getDate() + (6 - day));
+ return { startOfWeek, endOfWeek };
+    }
+        const check = await LastActive.findAll()
+        console.log("check", check.length)
+const currentDate = new Date();
+const { startOfWeek, endOfWeek } = getStartAndEndOfWeek(currentDate);
+const userActivities = await LastActive.findAll({
+ where: {
+    lastActiveAt: {
+      [Op.between]: [startOfWeek.toISOString().split('T')[0], endOfWeek.toISOString().split('T')[0]]
+    }
+ }
+});
+console.log("userActivities", userActivities.length)
+   // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   const dailyActiveUsers:Record<string, any> = {};
+
+userActivities.forEach(activity => {
+ const date = new Date(activity.lastActiveAt).toLocaleDateString('en-US', { weekday: 'long' });
+ if (!dailyActiveUsers[date]) {
+    dailyActiveUsers[date] = 1; // Initialize the count for this day if it's the first activity
+ } else {
+    dailyActiveUsers[date]++; // Increment the count for this day if it's not the first activity
+ }
+});
+
+console.log("dailyActiveUsers", dailyActiveUsers)
+res.json({ dailyActiveUsers });
+      
+  } catch (error) {
+
+    res.status(500).json({ error: 'An error occurred while fetching data.' });
+ }
 }

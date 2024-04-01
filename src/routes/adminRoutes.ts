@@ -1,6 +1,7 @@
 import express from "express";
 
-import { calculateAverageUsageTimeForAllUser, checkAndVerifyAdminToken, getAllUsersGender, getAverageUsageTimeForAllUser} from "../controller/adminController";
+import { calculateAverageUsageTimeForAllUser, checkAndVerifyAdminToken, getAllUsersGender, getAverageUsageTimeForAllUser, getDailyActiveUser, updateLastActiveAt} from "../controller/adminController";
+
 
 const router = express.Router();
 
@@ -14,4 +15,9 @@ router.post('/user-analytics/calculate-active-duration', calculateAverageUsageTi
 router.get('/user-analytics/get-average-usage-time', getAverageUsageTimeForAllUser)
 
 router.get('/verify-token', checkAndVerifyAdminToken)
+
+router.post('/send-last-active-time', updateLastActiveAt)
+
+router.get('/get-daily-active-user', getDailyActiveUser)
+
 export default router;
