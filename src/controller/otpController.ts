@@ -55,12 +55,10 @@ export const sendCustomerOtp = async (req: Request, res: Response): Promise<void
 
 export const verifyCustomerOtp = async (req: Request, res: Response): Promise<void> => {
     try {
-        const { otp, email } = req.body
-        console.log("otp", otp, email)
-       
+        const { email } = req.body
+        
        const existingCustomer =  await User.findOne({ where: { email } });
 
-        console.log("exist", existingCustomer)
         
         if (!existingCustomer) {
             res.json({
