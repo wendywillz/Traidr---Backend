@@ -3,6 +3,5 @@ export const productCategories = [
     "Antiques",
     "Furniture",
     "Kids Clothes",
-    "Adult Clothes",
-    "New wears"
+    "Adult Clothes"
 ]
