@@ -18,8 +18,8 @@ const secret: string = process.env.secret as string;
 export const createUser = async (req: Request, res: Response): Promise<void> => {
   try {
 
-    const { name, email, password, hearAboutUs, dateOfBirth, gender } = req.body;
-
+    const { name, email, password, hearAboutUs, dateOfBirth, gender, isAdmin } = req.body;
+const insertIsAdmin = isAdmin ? true : false;
     const existingUser = await User.findOne({ where: { email } });
     if (existingUser) {
       res.json({ 
@@ -37,7 +37,8 @@ export const createUser = async (req: Request, res: Response): Promise<void> => 
         password: hashedPassword,
         hearAboutUs,
         age:calculatedAge,
-        gender
+      gender,
+        isAdmin: insertIsAdmin
     });
     
 

@@ -2,7 +2,9 @@ import { Op } from "sequelize";
 import User from "../model/user";
 import { Request, Response } from 'express';
 import UserActivity from "../model/userActivity";
+import jwt from 'jsonwebtoken';
 
+const secret = process.env.secret!
 export const getAllUsersGender = async (req: Request, res: Response): Promise<void> =>{
     const maleTotal = await User.count({where:{gender:`male`}})
     const femaleTotal = await User.count({where:{gender:`female`}})
@@ -13,7 +15,7 @@ export const getAllUsersGender = async (req: Request, res: Response): Promise<vo
     })
 }
 
-export const getUserActiveDuration = async (req: Request, res: Response) => { 
+export const getAverageUsageTimeForAllUser = async (req: Request, res: Response) => { 
 
  try {
     function getStartAndEndOfWeek(date: Date) {
@@ -53,6 +55,7 @@ Object.keys(dailyUsage).forEach(day => {
  averageDailyUsage[day] = dailyUsage[day] / totalUsers;
 });
 
+console.log(averageDailyUsage);
 res.json({ averageDailyUsage });
 
  } catch (error) {
@@ -60,7 +63,7 @@ res.json({ averageDailyUsage });
  }
 }
 
-export const calculateUserActiveDuration = async (req: Request, res: Response) => { 
+export const calculateAverageUsageTimeForAllUser = async (req: Request, res: Response) => { 
   const { userId, activeDuration } = req.body;
   try {
     const todayDate = Date.now()
@@ -90,6 +93,39 @@ export const calculateUserActiveDuration = async (req: Request, res: Response) =
     }
    
   } catch (error) {
+    console.log("error", error)
     res.json({ internalServerError: 'internal sever error' });
  }
+}
+
+export async function checkAndVerifyAdminToken(req: Request, res: Response): Promise<void> {
+  try {
+    
+    const token = req.headers.authorization?.split(' ')[1]
+    if (!token) {
+    
+      res.json({ noTokenError: 'Unauthorized - Token not provided' })
+    } else {
+        
+      const decoded = jwt.verify(token, secret) as { userEmail: string }
+      const checkIfIsAdmin = await User.findOne({where:{email:decoded.userEmail, isAdmin:true}})
+        if (!checkIfIsAdmin) {
+            console.log("not admin")
+            res.json({ unauthorized: "unauthorized" })
+            return 
+        }
+        console.log("admin")
+       res.json({ success: 'Authorized' }) 
+      
+
+      
+    }
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (error: any) {
+    if (error.name === 'TokenExpiredError') {
+      res.json({ tokenExpiredError: 'Unauthorized - Token has expired' })
+    } else {
+      res.json({ verificationError: 'Unauthorized - Token verification failed' })
+    }
+  }
 }
