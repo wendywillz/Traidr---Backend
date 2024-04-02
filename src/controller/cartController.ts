@@ -4,6 +4,10 @@ import Cart from '../model/cart';
 import CartItem from '../model/cartItem';
 import ShopModel from '../model/shop';
 import User from '../model/user';
+import jwt from 'jsonwebtoken';
+import { config } from 'dotenv';
+config();
+const secret: string = process.env.secret as string;
 
 // const BACKEND_URL = process.env.BACKEND_URL;
 
@@ -71,3 +75,128 @@ export const addToCart = async(req:Request, res:Response)=>{
 }
 
 
+//get all cart items per user.
+export const getUserCartItems = async(req:Request, res:Response)=>{
+    // const cartId = req.params.cartId
+    // const userCart = await Cart.findByPk(cartId)
+    // if(!userCart){
+    //     res.json({message: `Cart Does not exist`})
+    //  }
+    //  const userId = userCart?.dataValues?.userId
+
+    //Using JWT to get the user
+    // const token = req.headers.authorization?.split(' ')[1]
+    // let userId;  
+    // if (!token) {
+    //     res.json({ noTokenError: 'Unauthorized - Token not provided' })
+    //   } else {
+    //     const decoded = jwt.verify(token, secret) as { userEmail: string }
+    //     const user = await User.findOne({
+    //       where: { email: decoded.userEmail }
+    //     })
+    //     userId = user?.dataValues.userId
+    //   }
+  
+    const userId = req.params.userId
+      const userCart = await Cart.findOne({where:{userId:userId}})
+      if(!userCart){
+          res.json({message: `Cart Does not exist`})
+       }
+       const cartId = userCart?.dataValues?.cartId
+
+
+     const userCartItems = await CartItem.findAll({where:{
+        cartId:cartId,
+        userId: userId 
+     }})
+
+     let cartProducts:Product[] =[]
+     for(let item of userCartItems){
+        let cartProduct= await Product.findByPk(item.dataValues.productId)
+        if(!cartProduct){continue}
+        cartProducts.push(cartProduct)
+     }
+
+     interface CartProductDetail{
+        productId: string;
+        productTitle: string;
+        productImage: string;
+        productPrice: number;
+        productQuantity: number;
+        productTotal: number;
+     }
+     let cartProductDetail:CartProductDetail = {
+         productId: '',
+         productTitle: '',
+         productImage: '',
+         productPrice: 0,
+         productQuantity: 0,
+         productTotal:0,
+     }
+     let cartProductDetails:CartProductDetail[]=[]
+
+     for (let cartProduct of cartProducts){
+        let correspondingCartItem = await CartItem.findOne({where:{productId:cartProduct.dataValues.productId}});
+        cartProductDetail = {
+            productId: cartProduct.dataValues.productId,
+            productTitle: cartProduct.dataValues.productTitle,
+            productImage: cartProduct.dataValues.productImages[0],
+            productPrice: cartProduct.dataValues.productPrice,
+            productQuantity: correspondingCartItem?.dataValues?.productQuantity, 
+            productTotal: 0
+ 
+        }
+        cartProductDetails.push(cartProductDetail)
+     }
+     for (cartProductDetail of cartProductDetails){
+        cartProductDetail.productTotal = cartProductDetail.productPrice * cartProductDetail.productQuantity
+     }
+
+     res.json({cartProductDetails})
+     
+}
+
+ export const deleteCartItem = async(req:Request, res:Response)=>{
+    const {userId, productId} = req.body
+    
+    const selectedCartItem = await CartItem.findOne({where:{
+        userId: userId,
+        productId:productId
+    }})
+    if(!selectedCartItem){
+        res.json({message:`Item does not exist in cart`})
+    }
+     selectedCartItem?.destroy()
+     res.json({message: `CartItem deleted`})
+ }
+
+
+
+
+
+
+
+
+
+
+
+
+/**
+  const token = req.headers.authorization?.split(' ')[1]
+  let userId;  
+  if (!token) {
+      res.json({ noTokenError: 'Unauthorized - Token not provided' })
+    } else {
+      const decoded = jwt.verify(token, secret) as { userEmail: string }
+      const user = await User.findOne({
+        where: { email: decoded.userEmail }
+      })
+      userId = user?.dataValues.userId
+    }
+
+    const userCart = await Cart.findByPk({where:{userId:userId}})
+    if(!userCart){
+        res.json({message: `Cart Does not exist`})
+     }
+     const cartId = userCart?.dataValues?.cartId
+ */
