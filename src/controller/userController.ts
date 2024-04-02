@@ -298,43 +298,6 @@ export const getUserShopId = async (req: Request, res: Response) => {
   }
 }
 
-export const getUserDemographicsByAge = async (req: Request, res: Response): Promise<void> => {
-  try {
-      // Define age ranges
-      const ageRanges = [
-          { min: 18, max: 24 },
-          { min: 25, max: 33 },
-          { min: 34, max: 44 },
-          { min: 45, max: Number.MAX_SAFE_INTEGER } // Set a very large number as maximum for 45 & above
-      ];
-
-      // Fetch users from the database
-      const users = await User.findAll();
-
-      // Initialize demographics report with zero counts for each age range
-      const demographicsReport = ageRanges.map(range => ({
-          ageRange: `${range.min}-${range.max === Number.MAX_SAFE_INTEGER ? 'above' : range.max}`,
-          count: 0
-      }));
-
-      // Count users in each age range
-      users.forEach(user => {
-          const age = parseInt(user.dataValues.age);
-          for (const range of ageRanges) {
-              if (age >= range.min && age <= range.max) {
-                  const index = ageRanges.indexOf(range);
-                  demographicsReport[index].count++;
-                  break; // No need to check further ranges
-              }
-          }
-      });
-
-      res.json({ demographicsReport });
-  } catch (error) {
-      res.status(500).json({ error: 'Internal server error' });
-  }
-};
-
 export const updateUser = async(req: Request, res:Response)=>{
   const userId = req.params.userid
   const {firstName, lastName, email, phoneNumber, gender, dateOfBirth, address, shopName} = req.body
