@@ -22,7 +22,7 @@ const orderRoute_1 = __importDefault(require("./routes/orderRoute"));
 const adminRoutes_1 = __importDefault(require("./routes/adminRoutes"));
 const cartRoutes_1 = __importDefault(require("./routes/cartRoutes"));
 dotenv_1.default.config();
-database_config_1.default.sync({ force: true })
+database_config_1.default.sync()
     .then(() => {
     console.log("Database has been connected");
 }).catch((error) => {

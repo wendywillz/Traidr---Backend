@@ -26,7 +26,7 @@ Order.init(
       type: DataTypes.UUID,
       allowNull: false,
       references: {
-        model: 'User',
+        model: 'Users',
         key: 'userId', 
       },
     },
@@ -34,7 +34,7 @@ Order.init(
         type: DataTypes.UUID,
         allowNull: false,
         references: {
-          model: 'Shop',
+          model: 'Shops',
           key: 'shopId', 
         },
       },

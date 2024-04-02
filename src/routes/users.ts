@@ -25,5 +25,4 @@ router.post('/login', loginUser);
 
 //Endpoint for updating users
 router.post(`/edit-profile/:userid`, updateUser)
-
 export default router;

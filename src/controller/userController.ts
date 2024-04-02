@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Request, Response } from "express";
 import { hashPassword } from '../utils/password';
 import { googleSignIn } from '../utils/googleAuth';
@@ -9,7 +10,6 @@ import speakeasy from 'speakeasy';
 import { transporter } from '../utils/emailSender';
 import Payment from '../model/payment';
 import { config } from 'dotenv';
-import { token } from "morgan";
 import Shop from "../model/shop";
 
 config();
@@ -18,8 +18,8 @@ const secret: string = process.env.secret as string;
 export const createUser = async (req: Request, res: Response): Promise<void> => {
   try {
 
-    const { name, email, password, hearAboutUs, dateOfBirth, gender } = req.body;
-
+    const { name, email, password, hearAboutUs, dateOfBirth, gender, isAdmin } = req.body;
+const insertIsAdmin = isAdmin ? true : false;
     const existingUser = await User.findOne({ where: { email } });
     if (existingUser) {
       res.json({ 
@@ -37,12 +37,12 @@ export const createUser = async (req: Request, res: Response): Promise<void> => 
         password: hashedPassword,
         hearAboutUs,
         age:calculatedAge,
-        gender
+      gender,
+        isAdmin: insertIsAdmin
     });
     
 
     if (!newUser) {
-      console.log("unable to create user")
         res.json({
           unableToCreateUser: 'Invalid details, account cannot be created'
         })
@@ -83,13 +83,11 @@ export const createUser = async (req: Request, res: Response): Promise<void> => 
       };
       
       await transporter.sendMail(mailOptions);
-      console.log("user created",token)
       res.json({ otpSentSuccessfully: email });
       } 
       }
     }
   }catch (error) {
-  console.log('Error during User signup:', error)
   res.json({
     internalServerError: 'Internal server error'
   })
@@ -123,7 +121,6 @@ export const createGoogleUser = async (req: Request, res: Response): Promise<voi
                 googleSignInSuccessful: 'Google Sign-In user created successfully',        
             });
         } catch (error) {
-            console.error('Error creating Google Sign-In user:', error);
             res.json({ internalServerError: 'Server error' });
         }
     };
@@ -140,12 +137,9 @@ export const handleGoogleCallback = async (req: Request, res: Response) => {
         // Exchange the authorization code for access tokens
         const { id_token } = await exchangeCodeForTokens(code);
 
-        console.log('ID Token:', id_token);
-
         await googleSignIn(id_token);
         res.redirect('/dashboard');
     } catch (error) {
-        console.error('Error handling Google callback:', error);
         res.json({ error: 'Internal server error' });
     }
 };
@@ -155,7 +149,6 @@ export const loginUser = async (req: Request, res: Response): Promise<void> => {
  try {
    const { email, password } = req.body;
   const existingUser = await User.findOne({ where: { email } })
-
 
   if (!existingUser) {
     res.json({
@@ -188,7 +181,6 @@ const successfulLogin = {
     }
   }
  } catch (error) {
-   console.log("error Login", error)
   res.json({internalServerError: "internal server error"})
  }
 }
@@ -221,7 +213,7 @@ export async function checkAndVerifyUserToken(req: Request, res: Response): Prom
 
       
     }
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
   } catch (error: any) {
     if (error.name === 'TokenExpiredError') {
       res.json({ tokenExpiredError: 'Unauthorized - Token has expired' })
@@ -236,7 +228,7 @@ export const savePayment = async (req: Request, res: Response) => {
 
   try {
     // Validate the payment details
-    const newPayment = await Payment.create({
+    await Payment.create({
       paymentMethod: paymentDetails.paymentMethod,
       businessName: paymentDetails.businessName,
       businessDescription: paymentDetails.businessDescription,
@@ -247,12 +239,10 @@ export const savePayment = async (req: Request, res: Response) => {
       country: paymentDetails.country,
     });
 
-    // Log the saved payment details
-    console.log('Payment Details Saved:', newPayment.toJSON());
+ 
 
     res.status(200).json({ message: 'Payment details saved successfully' });
   } catch (error) {
-    console.error('Error saving payment details:', error);
     res.json({ message: 'Error saving payment details' });
   }
 };
@@ -265,7 +255,6 @@ export const changePassword = async (req: Request, res: Response): Promise<void>
     }
     else {
       const decoded = jwt.verify(token, secret) as { userEmail: string };
-      console.log("decoded", decoded)
 
       const { currentPassword, newPassword } = req.body;
       const user = await User.findOne({ where: { email: decoded.userEmail } });
@@ -288,7 +277,6 @@ export const changePassword = async (req: Request, res: Response): Promise<void>
        
     }
   } catch (error) {
-    console.error('Error sending email:', error);
     res.status(500).json({ interalServerError: 'Failed to send OTP' });
   }
 }
@@ -306,7 +294,6 @@ export const getUserShopId = async (req: Request, res: Response) => {
       res.json({ shopId: shopDetails?.dataValues.shopId });
     }
   } catch (error) {
-    console.error('Error getting user shop ID:', error);
     res.json({ message: 'Error getting user shop ID' });
   }
 }
@@ -399,13 +386,12 @@ export const updateUser = async(req: Request, res:Response)=>{
   const {firstName, lastName, email, phoneNumber, gender, dateOfBirth, address, shopName} = req.body
   const user = await User.findByPk(userId)
   if(!user){
-    console.log(`error getting user of id : ${userId}`);
     res.json({
       message: `Error getting user`
     })
   }
   // let convertedAge = Date.parse(dateOfBirth)
-  let calculatedAge = Math.trunc((Date.now() - Date.parse(dateOfBirth))/31557600000)
+  const calculatedAge = Math.trunc((Date.now() - Date.parse(dateOfBirth))/31557600000)
   try {
     const updatedUser = await user?.update({
       name: `${firstName} ${lastName}`,
@@ -420,7 +406,7 @@ export const updateUser = async(req: Request, res:Response)=>{
       res.json({success: `User updated successfully`})
     }
   } catch (error) {
-    console.log(`Error updatinge user. Reason: ${error}`);
   }
  await user?.save({fields:['name', 'email', 'phoneNumber', 'gender', 'address', 'shopName']})
 }
+

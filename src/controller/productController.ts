@@ -106,7 +106,8 @@ export const getProductById = async (req: Request, res: Response): Promise<void>
   
       const { minPrice, maxPrice, price, search, category, sort } = req.query;
    
-      let whereCondition: any = {};
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const whereCondition: any = {};
   
       if (price){
         whereCondition.productPrice = price
