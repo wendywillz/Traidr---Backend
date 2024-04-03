@@ -13,7 +13,7 @@ class OrderItem extends Model {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   static associate(models: any): void {
     OrderItem.hasMany(models.Product, {foreignKey: `productId`, as: 'product'})
-    OrderItem.belongsTo(models.Order, { foreignKey: 'orderId', as: 'order' });
+     OrderItem.belongsTo(models.Order, { foreignKey: 'orderId', as: 'order' });
   }
 }
 

@@ -21,6 +21,7 @@ const review_1 = __importDefault(require("./routes/review"));
 const orderRoute_1 = __importDefault(require("./routes/orderRoute"));
 const adminRoutes_1 = __importDefault(require("./routes/adminRoutes"));
 const cartRoutes_1 = __importDefault(require("./routes/cartRoutes"));
+const orderRoute_2 = __importDefault(require("./routes/orderRoute"));
 dotenv_1.default.config();
 database_config_1.default.sync()
     .then(() => {
@@ -51,4 +52,5 @@ app.use('/reviews', review_1.default);
 app.use('/completedorders', orderRoute_1.default);
 app.use('/admin', adminRoutes_1.default);
 app.use('/cart', cartRoutes_1.default);
+app.use('/order', orderRoute_2.default);
 exports.default = app;

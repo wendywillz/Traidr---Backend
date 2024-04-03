@@ -1,10 +1,12 @@
 import express from 'express';
-import { completedOrdersByUser } from '../controller/orderController';
+import { addOrderItems, deleteOrder } from '../controller/orderController';
  
 const router = express.Router();
  
-// Endpoint for creating completedOrders
-router.get('/completed-orders-by-user', completedOrdersByUser);
+
+router.post('/create-order/', addOrderItems)
+router.post('/delete-order/', deleteOrder)
+
  
  
  
