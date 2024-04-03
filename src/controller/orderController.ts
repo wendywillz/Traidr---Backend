@@ -6,6 +6,7 @@ import User from '../model/user';
 import Cart from '../model/cart';
 import CartItem from '../model/cartItem';
 import Product from '../model/product';
+import ShopModel from '../model/shop';
  
  
  
@@ -85,7 +86,56 @@ export const getOrderItems = async(req: Request, res:Response)=>{
     userId: userId,
     orderId: orderId
   }})
+
+  let orderProducts:Product[] = []
+  for(let item of userOrderItems){
+    let orderProduct= await Product.findByPk(item.dataValues.productId)
+    if(!orderProduct){continue}
+    orderProducts.push(orderProduct)
+ }
+
+ interface OrderProductDetail{
+  productId: string;
+  productTitle: string;
+  productImage: string;
+  productPrice: number;
+  productQuantity: number;
+  productTotal: number;
+  sourceShop: string;
+}
+let orderProductDetail:OrderProductDetail = {
+   productId: '',
+   productTitle: '',
+   productImage: '',
+   productPrice: 0,
+   productQuantity: 0,
+   productTotal:0,
+   sourceShop: ''
+}
+let orderProductDetails:OrderProductDetail[]=[]
+
+for (let orderProduct of orderProducts){
+  let correspondingCartItem = await CartItem.findOne({where:{productId:orderProduct.dataValues.productId}});
+  let correspondingShop = await ShopModel.findByPk(orderProduct.dataValues.shopId)
   
+  orderProductDetail = {
+      productId: orderProduct.dataValues.productId,
+      productTitle: orderProduct.dataValues.productTitle,
+      productImage: orderProduct.dataValues.productImages[0],
+      productPrice: orderProduct.dataValues.productPrice,
+      productQuantity: correspondingCartItem?.dataValues?.productQuantity, 
+      productTotal: 0,
+      sourceShop: correspondingShop?.dataValues.shopName
+
+  }
+  orderProductDetails.push(orderProductDetail)
+}
+for (orderProductDetail of orderProductDetails){
+  orderProductDetail.productTotal = orderProductDetail.productPrice * orderProductDetail.productQuantity
+}
+
+res.json({orderProductDetails})
+
 
 
 }
