@@ -16,6 +16,7 @@ import reviewRouter from './routes/review'
 import completedordersRouter from './routes/orderRoute'
 import adminRouter from './routes/adminRoutes'
 import cartRouter from './routes/cartRoutes'
+import orderRouter from './routes/orderRoute'
 dotenv.config();
 
 DB.sync()
@@ -50,6 +51,7 @@ app.use('/reviews', reviewRouter);
 app.use('/completedorders', completedordersRouter);
 app.use('/admin', adminRouter)
 app.use('/cart', cartRouter)
+app.use('/order', orderRouter)
 
 
 

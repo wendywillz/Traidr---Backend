@@ -4,12 +4,12 @@ import { v4 as uuidv4 } from 'uuid';
 class Order extends Model {
   public id!: string;
   public userId!: string;
-  public shopId!: string;
+  public cartId!: string;
   
   
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   static associate(models: any): void {
-    Order.hasMany(models.OrderItem, {foreignKey: 'orderItemId', as: 'orderItem'})
+   // Order.hasMany(models.OrderItem, {foreignKey: 'orderItemId', as: 'orderItem'})
     Order.belongsTo(models.User, { foreignKey: 'userId', as: 'user' });
   }
 }
@@ -30,12 +30,12 @@ Order.init(
         key: 'userId', 
       },
     },
-    shopId: {
+    cartId: {
         type: DataTypes.UUID,
         allowNull: false,
         references: {
-          model: 'Shops',
-          key: 'shopId', 
+          model: 'Carts',
+          key: 'cartId', 
         },
       },
   },

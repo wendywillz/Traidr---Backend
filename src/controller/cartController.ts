@@ -124,6 +124,7 @@ export const getUserCartItems = async(req:Request, res:Response)=>{
         productPrice: number;
         productQuantity: number;
         productTotal: number;
+        sourceShop: string;
      }
      let cartProductDetail:CartProductDetail = {
          productId: '',
@@ -132,18 +133,22 @@ export const getUserCartItems = async(req:Request, res:Response)=>{
          productPrice: 0,
          productQuantity: 0,
          productTotal:0,
+         sourceShop: ''
      }
      let cartProductDetails:CartProductDetail[]=[]
 
      for (let cartProduct of cartProducts){
         let correspondingCartItem = await CartItem.findOne({where:{productId:cartProduct.dataValues.productId}});
+        let correspondingShop = await ShopModel.findByPk(cartProduct.dataValues.shopId)
+        
         cartProductDetail = {
             productId: cartProduct.dataValues.productId,
             productTitle: cartProduct.dataValues.productTitle,
             productImage: cartProduct.dataValues.productImages[0],
             productPrice: cartProduct.dataValues.productPrice,
             productQuantity: correspondingCartItem?.dataValues?.productQuantity, 
-            productTotal: 0
+            productTotal: 0,
+            sourceShop: correspondingShop?.dataValues.shopName
  
         }
         cartProductDetails.push(cartProductDetail)
