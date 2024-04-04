@@ -29,6 +29,7 @@ export const addToCart = async(req:Request, res:Response)=>{
         res.json({message: `Product does not exist`})
     }
     
+    const productShopId = currentProduct?.shopId
     const existingUserCart = await Cart.findOne({where:{userId: currentUserId}})
     console.log(existingUserCart);
         
@@ -42,7 +43,8 @@ export const addToCart = async(req:Request, res:Response)=>{
         cartId: userCartId,
         userId: currentUserId,
         productId: currentProductId,
-        productQuantity: productQuantity
+        productQuantity: productQuantity,
+        shopId: productShopId
     })
       } else {userCartId = existingUserCart?.dataValues?.cartId }
 
@@ -60,7 +62,8 @@ export const addToCart = async(req:Request, res:Response)=>{
                 cartId: userCartId,
                 userId: currentUserId,
                 productId: currentProductId,
-                 productQuantity: productQuantity
+                productQuantity: productQuantity,
+                shopId: productShopId
             })
         } catch (error) {
             res.json({errorMessage: `error creating cartItem. Reason: ${error}`})

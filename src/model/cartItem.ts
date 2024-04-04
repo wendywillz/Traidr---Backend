@@ -7,6 +7,7 @@ class CartItem extends Model {
   public userId!: string;
   public productId!: string;
   public productQuantity!: number;
+  public shopId!: string;
   
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   static associate(models: any): void {
@@ -50,7 +51,15 @@ CartItem.init(
     productQuantity: {
       type: DataTypes.INTEGER,
       allowNull: true,
-    }
+    },
+    shopId: {
+      type: DataTypes.UUID,
+      allowNull: false,
+      references: {
+        model: 'Shops',
+        key: 'shopId', 
+      },
+    },
   },
   {
     sequelize,

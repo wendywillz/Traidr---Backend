@@ -7,6 +7,7 @@ class OrderItem extends Model {
   public userId!: string;
   public productId!: string;
   public productQuantity!: number
+  public shopId!: string;
  
   
   
@@ -52,6 +53,14 @@ OrderItem.init(
     productQuantity:{
         type: DataTypes.INTEGER,
         allowNull: false
+    },
+    shopId: {
+      type: DataTypes.UUID,
+      allowNull: false,
+      references: {
+        model: 'Shops',
+        key: 'shopId', 
+      },
     },
     //Add Time stamps for order
   },
