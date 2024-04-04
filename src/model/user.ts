@@ -72,7 +72,10 @@ User.init(
       type: DataTypes.STRING,
       allowNull: false,
     },
-    
+    phoneNumber:{
+      type: DataTypes.INTEGER,
+      allowNull: true,
+    },
     resetPasswordExpiration: {
       type: DataTypes.DATE,
       allowNull: true,
