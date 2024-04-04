@@ -29,6 +29,18 @@ export const createSale = async(req:Request, res:Response)=>{
   })
   const specifiedOrderId = specifiedOrder?.dataValues.orderId
 
+  const specifiedSale = await Sale.findOne({
+    where:{
+        userId:currentUserId,
+        orderId: specifiedOrderId
+    }
+})
+if(specifiedSale){
+    res.json({message: `Sale already exists`})
+    console.log(`Sale already exists`);
+    return
+}
+
 const newSale = await Sale.create({
     userId: currentUserId,
     orderId: specifiedOrderId,
@@ -45,8 +57,64 @@ export const getSpcifiedSale = async(req:Request, res:Response)=>{
 }
 
 
+export const cancelSaleAndOrder = async(req:Request, res:Response)=>{
+    const {currentUserId} = req.body
+
+    const currentUserCart = await Cart.findOne({
+      where:{
+        userId: currentUserId
+      }
+    })
+  
+    const currentUserCartId = currentUserCart?.dataValues.cartId
+  
+    const specifiedOrder = await Order.findOne({
+      where:{
+        userId: currentUserId,
+        cartId: currentUserCartId,
+      }
+    })
+    const specifiedOrderId = specifiedOrder?.dataValues.orderId
+
+
+
+//Deleting Sales and them orderItems and then Order
+     await Sale.destroy({
+        where:{
+            userId:currentUserId,
+            orderId: specifiedOrderId
+        }
+    })
+
+   
+
+
+    // if(!specifiedSale){
+    //     res.json({message: `Sale does not exist`})
+    //     return
+    // }
+
+    // await specifiedSale?.destroy()
+    // res.json({message: `Sale Deleted`})
+
+    console.log(`Sale deleted`);
+
+    await OrderItem.destroy({
+        where:{
+          userId: currentUserId,
+          orderId: specifiedOrderId,
+        }})
+
+    console.log(`Sale and order items deleted`);
+
+    await specifiedOrder?.destroy()
+    res.json({message: `Sale, orderItems and Order all deleted`})
+    console.log(`Sale, order items and order deleted `);
+}
+
+
 export const deleteSale = async(req:Request, res:Response)=>{
-    const {currentUserId, saleTotal} = req.body
+    const {currentUserId} = req.body
 
     const currentUserCart = await Cart.findOne({
       where:{
@@ -72,6 +140,7 @@ export const deleteSale = async(req:Request, res:Response)=>{
 
     if(!specifiedSale){
         res.json({message: `Sale does not exist`})
+        return
     }
 
     await specifiedSale?.destroy()
