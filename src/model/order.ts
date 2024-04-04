@@ -32,7 +32,7 @@ Order.init(
     },
     cartId: {
         type: DataTypes.UUID,
-        allowNull: false,
+        allowNull: true,
         references: {
           model: 'Carts',
           key: 'cartId', 

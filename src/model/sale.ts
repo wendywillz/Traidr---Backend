@@ -5,15 +5,13 @@ class Sale extends Model {
   public id!: string;
   public userId!: string;
   public orderId!: string;
-  public deliveryAddress!: string;
-  public deliveryDetails!:string;
-  public paymentInfo!: string;
-  public orderTotal!: number;
+  public saleTotal!: number;
+  public saleStatus!: 'pending'|'completed';
   
   
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   static associate(models: any): void {
-   // Sale.hasMany(models.OrderItem, {foreignKey: 'orderItemId', as: 'orderItem'})
+   Sale.hasMany(models.OrderItem, {foreignKey: 'orderItemId', as: 'orderItem'})
    // Sale.belongsTo(models.User, { foreignKey: 'userId', as: 'user' });
   }
 }
@@ -41,21 +39,13 @@ Sale.init(
           model: 'Orders',
           key: 'orderId', 
         },
-      },
-    deliveryAddress:{
-        type: DataTypes.STRING,
-        allowNull: true,
     },
-    deliveryDetails:{
-        type: DataTypes.STRING,
-        allowNull: true,
-    },
-    paymentInfo:{
-        type: DataTypes.STRING,
-        allowNull: true,
-    },
-    orderTotal:{
+    saleTotal:{
         type: DataTypes.FLOAT,
+        allowNull: true,
+    },
+    saleStatus:{
+        type: DataTypes.STRING,
         allowNull: true,
     },
     

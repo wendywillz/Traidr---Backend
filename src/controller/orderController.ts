@@ -74,17 +74,28 @@ res.json({message: `new Order Created`})
  }
  
 export const getOrderItems = async(req: Request, res:Response)=>{
-  const userId = req.params.userId
-  const userOrder = await Order.findOne({where:{userId:userId}})
-      if(!userOrder){
-          res.json({message: `Order Does not exist`})
-       }
-       const orderId = userOrder?.dataValues.orderId
+  const currentUserId = req.params.userId
+
+  const currentUserCart = await Cart.findOne({
+    where:{
+      userId: currentUserId
+    }
+  })
+
+  const currentUserCartId = currentUserCart?.dataValues.cartId
+
+  const specifiedOrder = await Order.findOne({
+    where:{
+      userId: currentUserId,
+      cartId: currentUserCartId,
+    }
+  })
+  const specifiedOrderId = specifiedOrder?.dataValues.orderId
 
  const userOrderItems = await OrderItem.findAll({
   where:{
-    userId: userId,
-    orderId: orderId
+    userId: currentUserId,
+    orderId: specifiedOrderId, 
   }})
 
   let orderProducts:Product[] = []
