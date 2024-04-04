@@ -63,7 +63,8 @@ for(let item of currentCartItems){
     orderId: newOrderId,
     userId:currentUserId,
     productId:item.dataValues.productId,
-    productQuantity:item.dataValues.productQuantity
+    productQuantity:item.dataValues.productQuantity,
+    shopId: item.dataValues.shopId
   })
 }
 
