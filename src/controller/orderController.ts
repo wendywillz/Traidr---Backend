@@ -79,7 +79,7 @@ export const getOrderItems = async(req: Request, res:Response)=>{
       if(!userOrder){
           res.json({message: `Order Does not exist`})
        }
-       const orderId = userOrder?.dataValues?.orderId
+       const orderId = userOrder?.dataValues.orderId
 
  const userOrderItems = await OrderItem.findAll({
   where:{
@@ -141,19 +141,41 @@ res.json({orderProductDetails})
 }
 
 
- export const deleteOrder = async(req:Request, res:Response)=>{
-  const currentUserId = req.body
-  const specificOrder = await Order.findOne({
+ export const cancelOrder = async(req:Request, res:Response)=>{
+  const {currentUserId} = req.body
+
+  const currentUserCart = await Cart.findOne({
     where:{
       userId: currentUserId
     }
   })
 
-  if(!specificOrder){
+  const currentUserCartId = currentUserCart?.dataValues.cartId
+
+  const specifiedOrder = await Order.findOne({
+    where:{
+      userId: currentUserId,
+      cartId: currentUserCartId,
+    }
+  })
+
+  if(!specifiedOrder){
     res.json({message:`Order not found`})
   }
+  const specifiedOrderId = specifiedOrder?.dataValues.orderId
 
-  await specificOrder?.destroy()
+  console.log(`THE ORDER ID IS:`, specifiedOrderId);
+  await OrderItem.destroy({
+    where:{
+      userId: currentUserId,
+      orderId: specifiedOrderId,
+    }})
+    
+    console.log(`All Order Items from order ${specifiedOrderId} have been deleted`);
+  
+    await specifiedOrder?.destroy()
+    res.json({sucess: `Order and order items have been deleted`})
+    console.log(`Order and order items have been deleted`);
  }
  
 
