@@ -12,6 +12,7 @@ import DeliveryDetail from '../model/deliveryDetail';
 
 export const createDeliveryDetails = async(req:Request, res:Response)=>{
     const currentUserId = req.params.userId
+    console.log(currentUserId);
     const{recipientName, recipientPhoneNumber, deliveryAddress, deliveryInstructions} = req.body
 
     const currentUserCart = await Cart.findOne({
