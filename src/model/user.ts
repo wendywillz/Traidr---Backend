@@ -20,6 +20,7 @@ class User extends Model {
   public age!: number|null;
   public address!: string|null;
   public shopName!: string|null;
+  public profilePic!: string|null;
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   static associate(models: any): void {
@@ -109,7 +110,11 @@ User.init(
     shopName:{
       type: DataTypes.STRING,
       allowNull: true,
-    }
+    },
+    profilePic: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
   },
   {
     sequelize,
