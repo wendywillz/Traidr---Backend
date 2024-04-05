@@ -1,35 +1,34 @@
 import { DataTypes, Model } from 'sequelize';
 import sequelize from '../database/database.config';
 import { v4 as uuidv4 } from 'uuid';
-class CartItem extends Model {
+class WishListItem extends Model {
   public cartItemId!: number;
-  public cartId!: string;
+  public wishListId!: string;
   public userId!: string;
   public productId!: string;
-  public productQuantity!: number;
   public shopId!: string;
   
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   static associate(models: any): void {
-    CartItem.hasMany(models.Product, {foreignKey: `productId`, as: 'product'});
-    CartItem.belongsTo(models.Cart, { foreignKey: 'cartId', as: 'cart' });
+    WishListItem.hasMany(models.Product, {foreignKey: `productId`, as: 'product'});
+    WishListItem.belongsTo(models.WishList, { foreignKey: 'wishListId', as: 'wishList' });
   }
 }
 
-CartItem.init(
+WishListItem.init(
   {
-   cartItemId: {
+   wishListItemId: {
       type: DataTypes.INTEGER,
       autoIncrement: true,
       primaryKey: true,
       allowNull: false
     },
-    cartId: {
+    wishListId: {
       type: DataTypes.UUID,
       allowNull: false,
       references: {
-        model: 'Carts',
-        key: 'cartId', 
+        model: 'WishLists',
+        key: 'wishListId', 
       },
     },
     userId: {
@@ -48,10 +47,6 @@ CartItem.init(
           key: 'productId', 
         },
       },
-    productQuantity: {
-      type: DataTypes.INTEGER,
-      allowNull: true,
-    },
     shopId: {
       type: DataTypes.UUID,
       allowNull: false,
@@ -63,10 +58,10 @@ CartItem.init(
   },
   {
     sequelize,
-    modelName: 'CartItem',
+    modelName: 'WishListItem',
   }
 );
 
-export default CartItem;
+export default WishListItem;
 
 

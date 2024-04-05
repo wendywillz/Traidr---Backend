@@ -74,7 +74,7 @@ export const addToCart = async(req:Request, res:Response)=>{
         })
     }
 
-    res.json({message: `CartItem created`})
+    res.json({success: `CartItem created`})
 }
 
 
@@ -175,7 +175,7 @@ export const getUserCartItems = async(req:Request, res:Response)=>{
         res.json({message:`Item does not exist in cart`})
     }
      selectedCartItem?.destroy()
-     res.json({message: `CartItem deleted`})
+     res.json({success: `CartItem deleted`})
  }
 
 
