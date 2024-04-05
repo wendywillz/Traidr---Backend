@@ -58,7 +58,7 @@ DeliveryDetail.init(
         allowNull: true,
     },
     recipientPhoneNumber:{
-        type: DataTypes.INTEGER,
+        type: DataTypes.BIGINT,
         allowNull: true,
     },
     deliveryAddress:{
