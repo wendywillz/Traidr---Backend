@@ -11,8 +11,12 @@ import { transporter } from '../utils/emailSender';
 import Payment from '../model/payment';
 import { config } from 'dotenv';
 import Shop from "../model/shop";
+import path from 'node:path';
+import fs from 'node:fs';
 
 config();
+
+const BACKEND_URL = process.env.BACKEND_URL;
 const secret: string = process.env.secret as string;
 
 export const createUser = async (req: Request, res: Response): Promise<void> => {
@@ -301,6 +305,24 @@ export const getUserShopId = async (req: Request, res: Response) => {
 export const updateUser = async(req: Request, res:Response)=>{
   const userId = req.params.userid
   const {firstName, lastName, email, phoneNumber, gender, dateOfBirth, address, shopName} = req.body
+  
+  const profilePic = (req.files as unknown as { [fieldname: string]: Express.Multer.File[]; })? (req.files as unknown as { [fieldname: string]: Express.Multer.File[]; })[0] : null;
+
+  let photoPath = null;
+      if (profilePic) {
+        const sanitizedTitle = (firstName + " " + lastName).replace(/[^a-z0-9]/gi, '_').toLowerCase(); // Example sanitization
+        const newFilename = `${sanitizedTitle}_`; // Example filename construction
+        // const videoUndefinedPath = path.join(__dirname, "../../public/uploads", profilePic.filename);
+        // const renamedVideoPath = path.join(__dirname, "../../public/uploads", newFilename);
+        // fs.renameSync(videoUndefinedPath, renamedVideoPath);
+        photoPath = `${BACKEND_URL}/uploads/${newFilename}`;
+      }
+  
+  
+  
+  
+  
+  
   const user = await User.findByPk(userId)
   if(!user){
     res.json({
@@ -317,7 +339,8 @@ export const updateUser = async(req: Request, res:Response)=>{
       gender: gender,
       age: calculatedAge,
       address: address,
-      shopName: shopName
+      shopName: shopName,
+      profilePic:photoPath,
     })
     if(updatedUser){
       res.json({success: `User updated successfully`})
