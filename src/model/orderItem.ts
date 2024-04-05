@@ -2,7 +2,7 @@ import { DataTypes, Model } from 'sequelize';
 import sequelize from '../database/database.config';
 import { v4 as uuidv4 } from 'uuid';
 class OrderItem extends Model {
-  public id!: string;
+  public id!: number;
   public orderId!: string;
   public userId!: string;
   public productId!: string;

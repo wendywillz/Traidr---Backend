@@ -18,6 +18,7 @@ import adminRouter from './routes/adminRoutes'
 import cartRouter from './routes/cartRoutes'
 import orderRouter from './routes/orderRoute'
 import saleRouter from './routes/saleRoutes'
+import deliveryRouter from './routes/deliveryRoutes'
 dotenv.config();
 
 DB.sync()
@@ -54,6 +55,7 @@ app.use('/admin', adminRouter)
 app.use('/cart', cartRouter)
 app.use('/order', orderRouter)
 app.use('/sale', saleRouter)
+app.use('/delivery', deliveryRouter)
 
 
 

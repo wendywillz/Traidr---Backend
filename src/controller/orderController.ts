@@ -69,7 +69,7 @@ for(let item of currentCartItems){
 }
 
 
-res.json({message: `new Order Created`})
+res.json({success: `new Order Created`})
 
 
  }
@@ -186,7 +186,7 @@ res.json({orderProductDetails})
     console.log(`All Order Items from order ${specifiedOrderId} have been deleted`);
   
     await specifiedOrder?.destroy()
-    res.json({sucess: `Order and order items have been deleted`})
+    res.json({success: `Order and order items have been deleted`})
     console.log(`Order and order items have been deleted`);
  }
  

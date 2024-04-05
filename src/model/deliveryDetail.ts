@@ -1,7 +1,7 @@
 import { DataTypes, Model } from 'sequelize';
 import sequelize from '../database/database.config';
 import { v4 as uuidv4 } from 'uuid';
-class DeliveryDetails extends Model {
+class DeliveryDetail extends Model {
   public id!: string;
   public userId!: string;
   public orderId!: string;
@@ -10,18 +10,18 @@ class DeliveryDetails extends Model {
   public recipientPhoneNumber!: number;
   public deliveryAddress!: string;
   public deliveryInstructions!: string;
-  public deliveryStatus!: "pending"|"inTransit"|"delivered";
+  public deliveryStatus!: "pending"|"inTransit"|"delivered"|"cancelled";
   
   
   
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   static associate(models: any): void {
-   DeliveryDetails.hasMany(models.Sale, {foreignKey: 'saleId', as: 'sale'})
+   DeliveryDetail.hasMany(models.Sale, {foreignKey: 'saleId', as: 'sale'})
    // DeliveryDetails.belongsTo(models.User, { foreignKey: 'userId', as: 'user' });
   }
 }
 
-DeliveryDetails.init(
+DeliveryDetail.init(
   {
    deliveryId: {
         type: DataTypes.UUID,
@@ -58,7 +58,7 @@ DeliveryDetails.init(
         allowNull: true,
     },
     recipientPhoneNumber:{
-        type: DataTypes.NUMBER,
+        type: DataTypes.INTEGER,
         allowNull: true,
     },
     deliveryAddress:{
@@ -77,11 +77,11 @@ DeliveryDetails.init(
   },
   {
     sequelize,
-    modelName: 'DeliveryDetails',
+    modelName: 'DeliveryDetail',
   }
 );
 
-export default DeliveryDetails;
+export default DeliveryDetail;
 
 
 

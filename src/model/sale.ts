@@ -6,7 +6,7 @@ class Sale extends Model {
   public userId!: string;
   public orderId!: string;
   public saleTotal!: number;
-  public saleStatus!: 'pending'|'completed';
+  public saleStatus!: 'pending'|'completed'|'cancelled';
   
   
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
