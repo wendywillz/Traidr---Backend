@@ -1,7 +1,6 @@
 import express from "express";
 import { createUser, createGoogleUser, loginUser, savePayment, changePassword, handleGoogleCallback, getUserShopId, updateUser } from '../controller/userController';
 
-import { getUserIdFromToken } from "../utils/getModelId";
 
 const router = express.Router();
 
@@ -27,5 +26,5 @@ router.post('/login', loginUser);
 
 //Endpoint for updating users
 router.post(`/edit-profile`, updateUser)
-router.get('/get-id', getUserIdFromToken)
+
 export default router;
