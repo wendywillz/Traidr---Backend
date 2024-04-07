@@ -142,6 +142,7 @@ for (let orderProduct of orderProducts){
   }
   orderProductDetails.push(orderProductDetail)
 }
+//updating the total price of each product in the order
 for (orderProductDetail of orderProductDetails){
   orderProductDetail.productTotal = orderProductDetail.productPrice * orderProductDetail.productQuantity
 }

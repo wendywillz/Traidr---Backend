@@ -27,6 +27,7 @@ export const addToCart = async(req:Request, res:Response)=>{
     const currentProduct = await Product.findByPk(currentProductId)
     if(!currentProduct){
         res.json({message: `Product does not exist`})
+        return
     }
     
     const productShopId = currentProduct?.shopId

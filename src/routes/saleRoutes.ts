@@ -1,10 +1,10 @@
 import express from "express";
-import { createSale, getSpcifiedSale, deleteSale, cancelSaleAndOrder } from "../controller/saleController";
+import { createSale, getSaleSummary, deleteSale, cancelSaleAndOrder } from "../controller/saleController";
 
 const router = express.Router();
 router.post('/create-sale', createSale)
 
-router.get('/get-sale', getSpcifiedSale)
+router.get('/get-sale-summary/:userId', getSaleSummary)
 
 router.post('/delete-sale', deleteSale)
 router.post('/cancel-sale', cancelSaleAndOrder)

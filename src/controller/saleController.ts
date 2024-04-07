@@ -4,10 +4,12 @@ import Order from '../model/order';
 import OrderItem from '../model/orderItem';
 import User from '../model/user';
 import Cart from '../model/cart';
-import CartItem from '../model/cartItem';
+
 import Product from '../model/product';
 import ShopModel from '../model/shop';
 import Sale from '../model/sale';
+import DeliveryDetail from '../model/deliveryDetail';
+import { Op } from 'sequelize';
 
 
 export const createSale = async(req:Request, res:Response)=>{
@@ -52,8 +54,138 @@ res.json({message: `Sale Created`})
 }
 
 
-export const getSpcifiedSale = async(req:Request, res:Response)=>{
-    console.log(`Specified Sale`);
+export const getSaleSummary = async(req:Request, res:Response)=>{
+  const currentUserId = req.params.userId
+  const fiveMinsAgo = new Date(Date.now() - (5*60*1000))
+  
+
+    const specifiedSale = await Sale.findOne({
+      where:{
+        userId: currentUserId,
+        createdAt:{
+          [Op.lte]: fiveMinsAgo
+        }
+        
+      }
+    })
+    if(!specifiedSale){
+      res.json({message: `specifed sale does unavialable`})
+      return
+    }
+    const specifiedSaleId = specifiedSale.dataValues.saleId
+    const specifiedOrderId = specifiedSale?.dataValues.orderId
+
+    const specifiedDeliveryDetails = await DeliveryDetail.findOne({where:{
+        userId: currentUserId,
+        orderId: specifiedOrderId,
+        saleId: specifiedSaleId,
+}})
+
+    if(!specifiedDeliveryDetails){
+      res.json({message: `no delivery details`})
+      return
+    }
+
+    const userOrderedItems = await OrderItem.findAll({
+      where:{
+        userId: currentUserId,
+        orderId: specifiedOrderId, 
+      }})
+
+      
+      let orderedProducts:Product[] = []
+
+  for(let item of userOrderedItems){
+    let orderedProduct= await Product.findByPk(item.dataValues.productId)
+    if(!orderedProduct){continue}
+    orderedProducts.push(orderedProduct)
+ }
+
+
+ interface OrderedProductDetail{
+  productId: string;
+  productTitle: string;
+  productImage: string;
+  productPrice: number;
+  productQuantity: number;
+  productTotal: number;
+  sourceShop: string;
+}
+let orderedProductDetail:OrderedProductDetail = {
+   productId: '',
+   productTitle: '',
+   productImage: '',
+   productPrice: 0,
+   productQuantity: 0,
+   productTotal:0,
+   sourceShop: ''
+}
+let orderedProductDetails:OrderedProductDetail[]=[]
+
+
+
+ for (let orderedProduct of orderedProducts){
+  let correspondingOrderItem = await OrderItem.findOne({
+    where:{
+        userId: currentUserId,
+        orderId: specifiedOrderId,
+        productId: orderedProduct.dataValues.productId
+    }})
+  let correspondingShop = await ShopModel.findByPk(orderedProduct.dataValues.shopId)
+  orderedProductDetail = {
+    productId: orderedProduct.dataValues.productId,
+    productTitle: orderedProduct.dataValues.productTitle,
+    productImage: orderedProduct.dataValues.productImages[0],
+    productPrice: orderedProduct.dataValues.productPrice,
+    productQuantity: correspondingOrderItem?.dataValues?.productQuantity, 
+    productTotal: 0,
+    sourceShop: correspondingShop?.dataValues.shopName
+}
+  orderedProductDetails.push(orderedProductDetail)
+ }
+
+ //updating the quantity
+ for (orderedProductDetail of orderedProductDetails){
+  orderedProductDetail.productTotal = orderedProductDetail.productPrice * orderedProductDetail.productQuantity
+}
+
+
+
+
+
+interface ResponseData{
+  saleId: string;
+  saleTotal: number;
+  saleDate: string;
+  orderedProducts: OrderedProductDetail[];
+  recipientName: string;
+  recipientPhoneNumber: number;
+  deliveryAddress: string;
+  deliveryInstructions: string;
+}
+
+const responseData: ResponseData ={
+  saleId: specifiedSale.id,
+  saleTotal: specifiedSale.saleTotal,
+  saleDate: specifiedSale.dataValues.createdAt.toDateString(),
+  orderedProducts: orderedProductDetails,
+  recipientName: specifiedDeliveryDetails.recipientName,
+  recipientPhoneNumber: specifiedDeliveryDetails.recipientPhoneNumber,
+  deliveryAddress: specifiedDeliveryDetails.deliveryAddress,
+  deliveryInstructions: specifiedDeliveryDetails.deliveryInstructions
+}
+
+res.json({responseData})
+
+    console.log(`Specified Sale returned`);
+}
+
+
+
+
+export const processSaleAndClearCart = async(req:Request, res:Response)=>{
+  //Your goal here is to update the saleStatus field in the sale table from pending to completed
+  console.log(`Sale processed and cart cleared`);
 }
 
 
