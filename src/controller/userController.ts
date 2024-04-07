@@ -13,6 +13,7 @@ import { config } from 'dotenv';
 import Shop from "../model/shop";
 import path from 'node:path';
 import fs from 'node:fs';
+import { getUserIdFromToken } from "../utils/getModelId";
 
 config();
 
@@ -303,7 +304,7 @@ export const getUserShopId = async (req: Request, res: Response) => {
 }
 
 export const updateUser = async(req: Request, res:Response)=>{
-  const userId = req.params.userid
+  const userId = await getUserIdFromToken(req, res)
   const {firstName, lastName, email, phoneNumber, gender, dateOfBirth, address, shopName} = req.body
   
   const profilePic = (req.files as unknown as { [fieldname: string]: Express.Multer.File[]; })? (req.files as unknown as { [fieldname: string]: Express.Multer.File[]; })[0] : null;

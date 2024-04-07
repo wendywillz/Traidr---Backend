@@ -6,7 +6,7 @@ import { addToCart, getUserCartItems, deleteCartItem } from "../controller/cartC
 const router = express.Router();
  router.post('/add-to-cart/', addToCart)
 
- router.get('/get-cart-items/:userId', getUserCartItems)
+ router.get('/get-cart-items/', getUserCartItems)
  router.post('/delete-cart-item', deleteCartItem)
 
 

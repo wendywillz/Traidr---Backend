@@ -9,11 +9,14 @@ import Product from '../model/product';
 import ShopModel from '../model/shop';
 import Sale from '../model/sale';
 import DeliveryDetail from '../model/deliveryDetail';
+import { getUserIdFromToken } from '../utils/getModelId';
 import { Op } from 'sequelize';
+import CartItem from '../model/cartItem';
 
 
 export const createSale = async(req:Request, res:Response)=>{
-    const {currentUserId, saleTotal} = req.body
+  const currentUserId = await getUserIdFromToken(req, res)  
+  const {saleTotal} = req.body
 
   const currentUserCart = await Cart.findOne({
     where:{
@@ -55,8 +58,8 @@ res.json({message: `Sale Created`})
 
 
 export const getSaleSummary = async(req:Request, res:Response)=>{
-  const currentUserId = req.params.userId
-  const fiveMinsAgo = new Date(Date.now() - (5*60*1000))
+  const currentUserId = await getUserIdFromToken(req, res)
+  const fiveMinsAgo = new Date(Date.now() - (5 * 60* 1000))
   
 
     const specifiedSale = await Sale.findOne({
@@ -70,6 +73,7 @@ export const getSaleSummary = async(req:Request, res:Response)=>{
     })
     if(!specifiedSale){
       res.json({message: `specifed sale does unavialable`})
+      console.log(`specified sale not available`);
       return
     }
     const specifiedSaleId = specifiedSale.dataValues.saleId
@@ -183,14 +187,67 @@ res.json({responseData})
 
 
 
-export const processSaleAndClearCart = async(req:Request, res:Response)=>{
+export const completeSaleAndClearCart = async(req:Request, res:Response)=>{
   //Your goal here is to update the saleStatus field in the sale table from pending to completed
-  console.log(`Sale processed and cart cleared`);
+  const currentUserId = await getUserIdFromToken(req, res) 
+
+    const currentUserCart = await Cart.findOne({
+      where:{
+        userId: currentUserId
+      }
+    })
+    
+    if(!currentUserCart){
+      res.json({message: `User cart does not exist`})
+      console.log(`User cart does not exist`);
+      return
+    }
+    const currentUserCartId = currentUserCart?.dataValues.cartId
+  
+    const specifiedOrder = await Order.findOne({
+      where:{
+        userId: currentUserId,
+        cartId: currentUserCartId,
+      }
+    })
+    if(!specifiedOrder){
+      res.json({message: `Order does not exist`})
+      console.log(`Order does not exist`);
+      return
+    }
+    const specifiedOrderId = specifiedOrder?.dataValues.orderId
+
+    const specifiedSale = await Sale.findOne({
+        where:{
+            userId:currentUserId,
+            orderId: specifiedOrderId
+        }
+    })
+
+    if(!specifiedSale){
+        res.json({message: `Sale does not exist`})
+        console.log(`Sale does not exist`);
+        return
+    }
+    
+   const updatedSale = specifiedSale.update({
+    saleStatus: 'completed'
+   })
+    await CartItem.destroy({
+      where:{
+        userId:currentUserId,
+        cartId: currentUserCartId
+        
+      }
+    })
+    await currentUserCart.destroy()
+
+  console.log(`Sale completed and cart cleared`);
 }
 
 
 export const cancelSaleAndOrder = async(req:Request, res:Response)=>{
-    const {currentUserId} = req.body
+  const currentUserId = await getUserIdFromToken(req, res)
 
     const currentUserCart = await Cart.findOne({
       where:{
@@ -218,16 +275,6 @@ export const cancelSaleAndOrder = async(req:Request, res:Response)=>{
         }
     })
 
-   
-
-
-    // if(!specifiedSale){
-    //     res.json({message: `Sale does not exist`})
-    //     return
-    // }
-
-    // await specifiedSale?.destroy()
-    // res.json({message: `Sale Deleted`})
 
     console.log(`Sale deleted`);
 
@@ -246,7 +293,7 @@ export const cancelSaleAndOrder = async(req:Request, res:Response)=>{
 
 
 export const deleteSale = async(req:Request, res:Response)=>{
-    const {currentUserId} = req.body
+  const currentUserId = await getUserIdFromToken(req, res) 
 
     const currentUserCart = await Cart.findOne({
       where:{

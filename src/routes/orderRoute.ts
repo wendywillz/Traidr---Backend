@@ -6,7 +6,7 @@ const router = express.Router();
 
 router.post('/create-order/', addOrderItems)
 
-router.get('/get-order-items/:userId', getOrderItems)
+router.get('/get-order-items', getOrderItems)
 router.post('/cancel-order/', cancelOrder) 
 
  

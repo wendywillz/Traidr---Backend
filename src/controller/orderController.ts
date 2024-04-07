@@ -7,6 +7,7 @@ import Cart from '../model/cart';
 import CartItem from '../model/cartItem';
 import Product from '../model/product';
 import ShopModel from '../model/shop';
+import { getUserIdFromToken } from '../utils/getModelId';
  
  
  
@@ -22,7 +23,7 @@ import ShopModel from '../model/shop';
 
  export const addOrderItems = async(req:Request, res:Response)=>{
 
-  const {currentUserId} = req.body
+  const currentUserId = await getUserIdFromToken(req, res)
   const userCart = await Cart.findOne({where:{userId:currentUserId}})
   if(!userCart){
     res.json({message: `Cart Does not exist`})
@@ -75,7 +76,7 @@ res.json({success: `new Order Created`})
  }
  
 export const getOrderItems = async(req: Request, res:Response)=>{
-  const currentUserId = req.params.userId
+  const currentUserId = await getUserIdFromToken(req, res)
 
   const currentUserCart = await Cart.findOne({
     where:{
@@ -155,7 +156,7 @@ res.json({orderProductDetails})
 
 
  export const cancelOrder = async(req:Request, res:Response)=>{
-  const {currentUserId} = req.body
+  const currentUserId = await getUserIdFromToken(req, res)
 
   const currentUserCart = await Cart.findOne({
     where:{
