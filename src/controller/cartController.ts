@@ -9,6 +9,8 @@ import { config } from 'dotenv';
 config();
 const secret: string = process.env.secret as string;
 
+import { getUserIdFromToken } from '../utils/getModelId';
+
 // const BACKEND_URL = process.env.BACKEND_URL;
 
 const createNewCart = async (currentUserId: string)=>{
@@ -21,7 +23,8 @@ const createNewCart = async (currentUserId: string)=>{
 //add to cart would execute on a post request from the frontend
 export const addToCart = async(req:Request, res:Response)=>{
     // const currentProductId = req.params.productId
-    const {currentUserId, currentProductId, productQuantity} = req.body
+    const currentUserId = await getUserIdFromToken(req, res)
+    const {currentProductId, productQuantity} = req.body
     let cart;
 
     const currentProduct = await Product.findByPk(currentProductId)
@@ -81,27 +84,7 @@ export const addToCart = async(req:Request, res:Response)=>{
 
 //get all cart items per user.
 export const getUserCartItems = async(req:Request, res:Response)=>{
-    // const cartId = req.params.cartId
-    // const userCart = await Cart.findByPk(cartId)
-    // if(!userCart){
-    //     res.json({message: `Cart Does not exist`})
-    //  }
-    //  const userId = userCart?.dataValues?.userId
-
-    //Using JWT to get the user
-    // const token = req.headers.authorization?.split(' ')[1]
-    // let userId;  
-    // if (!token) {
-    //     res.json({ noTokenError: 'Unauthorized - Token not provided' })
-    //   } else {
-    //     const decoded = jwt.verify(token, secret) as { userEmail: string }
-    //     const user = await User.findOne({
-    //       where: { email: decoded.userEmail }
-    //     })
-    //     userId = user?.dataValues.userId
-    //   }
-  
-    const userId = req.params.userId
+    const userId = await getUserIdFromToken(req, res)
       const userCart = await Cart.findOne({where:{userId:userId}})
       if(!userCart){
           res.json({message: `Cart Does not exist`})
@@ -166,10 +149,11 @@ export const getUserCartItems = async(req:Request, res:Response)=>{
 }
 
  export const deleteCartItem = async(req:Request, res:Response)=>{
-    const {userId, productId} = req.body
+    const currentUserId = await getUserIdFromToken(req, res)
+    const {productId} = req.body
     
     const selectedCartItem = await CartItem.findOne({where:{
-        userId: userId,
+        userId: currentUserId,
         productId:productId
     }})
     if(!selectedCartItem){

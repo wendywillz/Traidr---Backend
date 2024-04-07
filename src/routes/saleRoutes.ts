@@ -1,13 +1,20 @@
 import express from "express";
-import { createSale, getSaleSummary, deleteSale, cancelSaleAndOrder } from "../controller/saleController";
+import { createSale, getSaleSummary, deleteSale, cancelSaleAndOrder, completeSaleAndClearCart } from "../controller/saleController";
+
+import { cancelDeliverySaleAndOrder } from "../controller/deliveryController";
 
 const router = express.Router();
 router.post('/create-sale', createSale)
 
-router.get('/get-sale-summary/:userId', getSaleSummary)
+router.get('/get-sale-summary', getSaleSummary)
+router.post('/complete-sale', completeSaleAndClearCart)//not yet implemented on frontend
+
+
+router.post('/cancel-sale', cancelSaleAndOrder)
+router.post('/cancel-sale-and-delivery', cancelDeliverySaleAndOrder)//not yet implemented on frontend
+
 
 router.post('/delete-sale', deleteSale)
-router.post('/cancel-sale', cancelSaleAndOrder)
 
 
 export default router;

@@ -3,6 +3,13 @@ import Order from "../model/order"
 import User from "../model/user"
 import Sale from "../model/sale"
 import DeliveryDetail from "../model/deliveryDetail"
+import { Request, Response } from "express"
+import jwt from 'jsonwebtoken';
+import { config } from 'dotenv';
+
+config();
+const BACKEND_URL = process.env.BACKEND_URL;
+const secret: string = process.env.secret as string;
 
 
 //SPECIFIC CART ID
@@ -102,4 +109,24 @@ export const getSpecificDeliveryId = async(currentUserId:string)=>{
 
   const specifiedDeliveryDetailsId = specifiedDeliveryDetails?.dataValues.deliveryId
   return specifiedDeliveryDetailsId
+}
+
+
+export const getUserIdFromToken = async(req:Request, res:Response)=>{
+    //Using JWT to get the user
+    const token = req.headers.authorization?.split(' ')[1]
+    let userId;  
+    if (!token) {
+        res.json({ noTokenError: 'Unauthorized - Token not provided' })
+      } else {
+        const decoded = jwt.verify(token, secret) as { userEmail: string }
+        const user = await User.findOne({
+          where: { email: decoded.userEmail }
+        })
+        userId = user?.dataValues.userId
+      }
+      const response ={
+        userId: userId
+      }
+    return userId
 }
