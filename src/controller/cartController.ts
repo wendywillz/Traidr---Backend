@@ -88,6 +88,7 @@ export const getUserCartItems = async(req:Request, res:Response)=>{
       const userCart = await Cart.findOne({where:{userId:userId}})
       if(!userCart){
           res.json({message: `Cart Does not exist`})
+          return
        }
        const cartId = userCart?.dataValues?.cartId
 

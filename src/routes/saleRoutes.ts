@@ -11,7 +11,7 @@ router.post('/complete-sale', completeSaleAndClearCart)//not yet implemented on 
 
 
 router.post('/cancel-sale', cancelSaleAndOrder)
-router.post('/cancel-sale-and-delivery', cancelDeliverySaleAndOrder)//not yet implemented on frontend
+router.post('/cancel-delivey-and-sale', cancelDeliverySaleAndOrder)//not yet implemented on frontend
 
 
 router.post('/delete-sale', deleteSale)
