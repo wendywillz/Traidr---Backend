@@ -7,7 +7,6 @@ const express_1 = __importDefault(require("express"));
 const path_1 = __importDefault(require("path"));
 const cookie_parser_1 = __importDefault(require("cookie-parser"));
 const morgan_1 = __importDefault(require("morgan"));
-const database_config_1 = __importDefault(require("./database/database.config"));
 const dotenv_1 = __importDefault(require("dotenv"));
 const otpRoute_1 = __importDefault(require("./routes/otpRoute"));
 const cors_1 = __importDefault(require("cors"));
@@ -24,6 +23,7 @@ const cartRoutes_1 = __importDefault(require("./routes/cartRoutes"));
 const orderRoute_2 = __importDefault(require("./routes/orderRoute"));
 const saleRoutes_1 = __importDefault(require("./routes/saleRoutes"));
 const deliveryRoutes_1 = __importDefault(require("./routes/deliveryRoutes"));
+const database_config_1 = __importDefault(require("./database/database.config"));
 dotenv_1.default.config();
 database_config_1.default.sync()
     .then(() => {

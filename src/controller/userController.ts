@@ -11,8 +11,6 @@ import { transporter } from '../utils/emailSender';
 import Payment from '../model/payment';
 import { config } from 'dotenv';
 import Shop from "../model/shop";
-import path from 'node:path';
-import fs from 'node:fs';
 import { getUserIdFromToken } from "../utils/getModelId";
 
 config();
@@ -155,7 +153,7 @@ export const loginUser = async (req: Request, res: Response): Promise<void> => {
    const { email, password } = req.body;
   const existingUser = await User.findOne({ where: { email } })
 
-  if (!existingUser) {
+   if (!existingUser) {
     res.json({
       userNotFoundError: 'User not found'
     })
@@ -186,7 +184,7 @@ const successfulLogin = {
     }
   }
  } catch (error) {
-  res.json({internalServerError: "internal server error"})
+   res.json({internalServerError: "internal server error"})
  }
 }
 

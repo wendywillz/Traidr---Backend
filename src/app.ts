@@ -2,7 +2,6 @@ import express from 'express';
 import path from 'path';
 import cookieParser from 'cookie-parser';
 import logger from 'morgan';
-import DB from './database/database.config';
 import dotenv from 'dotenv';
 import otpRoute from './routes/otpRoute'
 import cors from 'cors'
@@ -19,6 +18,7 @@ import cartRouter from './routes/cartRoutes'
 import orderRouter from './routes/orderRoute'
 import saleRouter from './routes/saleRoutes'
 import deliveryRouter from './routes/deliveryRoutes'
+import DB from './database/database.config';
 dotenv.config();
 
 DB.sync()

@@ -20,6 +20,7 @@ dist-ssr
 src/database
 *.local
 src/database/*
+public/uploads/*
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
