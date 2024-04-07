@@ -2,7 +2,7 @@ import { DataTypes, Model } from 'sequelize';
 import sequelize from '../database/database.config';
 import { v4 as uuidv4 } from 'uuid';
 class WishListItem extends Model {
-  public cartItemId!: number;
+  public wishListItemId!: number;
   public wishListId!: string;
   public userId!: string;
   public productId!: string;
