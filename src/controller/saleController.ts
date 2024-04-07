@@ -67,7 +67,7 @@ export const getSaleSummary = async(req:Request, res:Response)=>{
         userId: currentUserId,
         saleStatus: 'completed',
         createdAt:{
-          [Op.lte]: fiveMinsAgo
+          [Op.gte]: fiveMinsAgo
         }
         
       }
