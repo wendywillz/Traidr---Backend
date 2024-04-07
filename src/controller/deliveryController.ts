@@ -140,7 +140,7 @@ export const cancelDeliverySaleAndOrder = async(req:Request, res:Response)=>{
       }
     })
     await specifiedOrder.destroy()
-
+    res.json({success: `Delivery, Sale, Order Items and Order all cancelled.`})
   console.log(`Delivery, Sale, Order Items and Order all cancelled.`);
 }
 

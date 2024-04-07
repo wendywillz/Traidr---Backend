@@ -65,6 +65,7 @@ export const getSaleSummary = async(req:Request, res:Response)=>{
     const specifiedSale = await Sale.findOne({
       where:{
         userId: currentUserId,
+        saleStatus: 'completed',
         createdAt:{
           [Op.lte]: fiveMinsAgo
         }
@@ -233,6 +234,10 @@ export const completeSaleAndClearCart = async(req:Request, res:Response)=>{
    const updatedSale = specifiedSale.update({
     saleStatus: 'completed'
    })
+
+   const updatedOrder = specifiedOrder.update({
+    cartId:null
+   })
     await CartItem.destroy({
       where:{
         userId:currentUserId,
@@ -241,7 +246,7 @@ export const completeSaleAndClearCart = async(req:Request, res:Response)=>{
       }
     })
     await currentUserCart.destroy()
-
+    res.json({success: `Sale completed and cart Items and cart deleted`})
   console.log(`Sale completed and cart cleared`);
 }
 
