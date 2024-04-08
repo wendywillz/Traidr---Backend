@@ -2,7 +2,6 @@ import { Request, Response } from 'express';
 
 import Order from '../model/order';
 import OrderItem from '../model/orderItem';
-import User from '../model/user';
 import Cart from '../model/cart';
 import CartItem from '../model/cartItem';
 import Product from '../model/product';
@@ -59,7 +58,7 @@ const newUserOrder = await createNewOrder(currentUserId, currentUserCartId)
 
 const newOrderId = newUserOrder.dataValues.orderId
 
-for(let item of currentCartItems){
+for(const item of currentCartItems){
   await OrderItem.create({
     orderId: newOrderId,
     userId:currentUserId,
@@ -100,9 +99,9 @@ export const getOrderItems = async(req: Request, res:Response)=>{
     orderId: specifiedOrderId, 
   }})
 
-  let orderProducts:Product[] = []
-  for(let item of userOrderItems){
-    let orderProduct= await Product.findByPk(item.dataValues.productId)
+  const orderProducts:Product[] = []
+  for(const item of userOrderItems){
+    const orderProduct= await Product.findByPk(item.dataValues.productId)
     if(!orderProduct){continue}
     orderProducts.push(orderProduct)
  }
@@ -125,11 +124,11 @@ let orderProductDetail:OrderProductDetail = {
    productTotal:0,
    sourceShop: ''
 }
-let orderProductDetails:OrderProductDetail[]=[]
+const orderProductDetails:OrderProductDetail[]=[]
 
-for (let orderProduct of orderProducts){
-  let correspondingCartItem = await CartItem.findOne({where:{productId:orderProduct.dataValues.productId}});
-  let correspondingShop = await ShopModel.findByPk(orderProduct.dataValues.shopId)
+for (const orderProduct of orderProducts){
+  const correspondingCartItem = await CartItem.findOne({where:{productId:orderProduct.dataValues.productId}});
+  const correspondingShop = await ShopModel.findByPk(orderProduct.dataValues.shopId)
   
   orderProductDetail = {
       productId: orderProduct.dataValues.productId,
