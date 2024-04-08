@@ -18,6 +18,7 @@ import cartRouter from './routes/cartRoutes'
 import orderRouter from './routes/orderRoute'
 import saleRouter from './routes/saleRoutes'
 import deliveryRouter from './routes/deliveryRoutes'
+import wishListRouter from './routes/wishListRoutes'
 import DB from './database/database.config';
 dotenv.config();
 
@@ -56,6 +57,7 @@ app.use('/cart', cartRouter)
 app.use('/order', orderRouter)
 app.use('/sale', saleRouter)
 app.use('/delivery', deliveryRouter)
+app.use('/wishlist', wishListRouter)
 
 
 

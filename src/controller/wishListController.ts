@@ -26,6 +26,7 @@ export const addToWishList = async(req:Request, res:Response)=>{
     const currentProduct = await Product.findByPk(currentProductId)
     if(!currentProduct){
         res.json({message: `Product does not exist`})
+        console.log(`Product ${currentProductId} does not exist`);
         return
     }
     
@@ -66,12 +67,16 @@ export const addToWishList = async(req:Request, res:Response)=>{
             })
         } catch (error) {
             res.json({errorMessage: `error creating wishListItem. Reason: ${error}`})
+            console.log(`Error creating wishList Item`);
         }
     } else{
+        res.json({message: `Item is already in wishlist`})
+        console.log(`Item is already in wishlist`);
         return
     }
 
     res.json({success: `WishListItem created`})
+    console.log(`WishList item created`);
 }
 
 
@@ -102,27 +107,30 @@ export const getWishListItems = async(req:Request, res:Response)=>{
         productTitle: string;
         productImage: string;
         productPrice: number;
-        sourceShop: string;
+        productDescription: string;
+      //  sourceShop: string;
      }
      let wishListProductDetail:WishListProductDetail = {
          productId: '',
          productTitle: '',
          productImage: '',
          productPrice: 0,
-         sourceShop: ''
+         productDescription: '',
+        // sourceShop: ''
      }
      let wishListProductDetails:WishListProductDetail[]=[]
 
      for (let wishListProduct of wishListProducts){
-        let correspondingWishListItem = await WishListItem.findOne({where:{productId:wishListProduct.dataValues.productId}});
-        let correspondingShop = await Shop.findByPk(wishListProduct.dataValues.shopId)
+        // let correspondingWishListItem = await WishListItem.findOne({where:{productId:wishListProduct.dataValues.productId}});
+        // let correspondingShop = await Shop.findByPk(wishListProduct.dataValues.shopId)
         
         wishListProductDetail = {
             productId: wishListProduct.dataValues.productId,
             productTitle: wishListProduct.dataValues.productTitle,
             productImage: wishListProduct.dataValues.productImages[0],
             productPrice: wishListProduct.dataValues.productPrice,
-            sourceShop: correspondingShop?.dataValues.shopName
+            productDescription:wishListProduct.dataValues.productDescription,
+           // sourceShop: correspondingShop?.dataValues.shopName
  
         }
         wishListProductDetails.push(wishListProductDetail)
