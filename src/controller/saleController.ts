@@ -57,7 +57,7 @@ res.json({message: `Sale Created`})
 }
 
 
-export const getSaleSummary = async(req:Request, res:Response)=>{
+export const getSaleReceipt = async(req:Request, res:Response)=>{
   const currentUserId = await getUserIdFromToken(req, res)
   const fiveMinsAgo = new Date(Date.now() - (5 * 60* 1000))
   
@@ -185,6 +185,140 @@ res.json({responseData})
     console.log(`Specified Sale returned`);
 }
 
+
+export const getSaleSummaryById = async (req:Request, res:Response)=>{
+  const currentUserId = await getUserIdFromToken(req, res)
+ 
+ const specifiedSaleId = req.params.saleId
+
+ const specifiedSale = await Sale.findByPk(specifiedSaleId)
+ if(!specifiedSale){
+   res.json({message: `specifed sale does unavialable`})
+   console.log(`specified sale not available`);
+   return
+ }
+ const specifiedOrderId = specifiedSale?.dataValues.orderId
+
+ const specifiedDeliveryDetails = await DeliveryDetail.findOne({where:{
+     userId: currentUserId,
+     orderId: specifiedOrderId,
+     saleId: specifiedSaleId,
+}})
+
+ if(!specifiedDeliveryDetails){
+   res.json({message: `no delivery details`})
+   return
+ }
+
+ const userOrderedItems = await OrderItem.findAll({
+   where:{
+     userId: currentUserId,
+     orderId: specifiedOrderId, 
+   }})
+
+   
+   let orderedProducts:Product[] = []
+
+for(let item of userOrderedItems){
+ let orderedProduct= await Product.findByPk(item.dataValues.productId)
+ if(!orderedProduct){continue}
+ orderedProducts.push(orderedProduct)
+}
+
+
+interface OrderedProductDetail{
+productId: string;
+productTitle: string;
+productImage: string;
+productPrice: number;
+productQuantity: number;
+productTotal: number;
+sourceShop: string;
+}
+let orderedProductDetail:OrderedProductDetail = {
+productId: '',
+productTitle: '',
+productImage: '',
+productPrice: 0,
+productQuantity: 0,
+productTotal:0,
+sourceShop: ''
+}
+let orderedProductDetails:OrderedProductDetail[]=[]
+
+
+for (let orderedProduct of orderedProducts){
+let correspondingOrderItem = await OrderItem.findOne({
+ where:{
+     userId: currentUserId,
+     orderId: specifiedOrderId,
+     productId: orderedProduct.dataValues.productId
+ }})
+let correspondingShop = await ShopModel.findByPk(orderedProduct.dataValues.shopId)
+orderedProductDetail = {
+ productId: orderedProduct.dataValues.productId,
+ productTitle: orderedProduct.dataValues.productTitle,
+ productImage: orderedProduct.dataValues.productImages[0],
+ productPrice: orderedProduct.dataValues.productPrice,
+ productQuantity: correspondingOrderItem?.dataValues?.productQuantity, 
+ productTotal: 0,
+ sourceShop: correspondingShop?.dataValues.shopName
+}
+orderedProductDetails.push(orderedProductDetail)
+}
+
+//updating the quantity
+for (orderedProductDetail of orderedProductDetails){
+orderedProductDetail.productTotal = orderedProductDetail.productPrice * orderedProductDetail.productQuantity
+}
+
+interface ResponseData{
+saleId: string;
+saleTotal: number;
+saleDate: string;
+orderedProducts: OrderedProductDetail[];
+recipientName: string;
+recipientPhoneNumber: number;
+deliveryAddress: string;
+deliveryInstructions: string;
+}
+
+const responseData: ResponseData ={
+saleId: specifiedSale.id,
+saleTotal: specifiedSale.saleTotal,
+saleDate: specifiedSale.dataValues.createdAt.toDateString(),
+orderedProducts: orderedProductDetails,
+recipientName: specifiedDeliveryDetails.recipientName,
+recipientPhoneNumber: specifiedDeliveryDetails.recipientPhoneNumber,
+deliveryAddress: specifiedDeliveryDetails.deliveryAddress,
+deliveryInstructions: specifiedDeliveryDetails.deliveryInstructions
+}
+
+res.json({responseData})
+
+
+
+ console.log(`Specified Sale Summary returned`);
+}
+
+
+export const getAllOrderHistories = async(req:Request, res:Response)=>{
+ const currentUserId = await getUserIdFromToken(req, res)
+ const previousOrders = await Sale.findAll({
+   where:{
+     userId: currentUserId,
+     saleStatus : 'completed'
+   }})
+
+ if(!previousOrders) {
+   res.json({message: `no previous orders found`})
+   console.log(`No previous orders found`);
+   return
+ }
+ 
+ res.json({previousOrders})
+ console.log(`All previous orders sent`);
+}
 
 
 
