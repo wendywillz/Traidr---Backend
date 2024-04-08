@@ -27,7 +27,7 @@
     "nodemailer": "^6.9.9",
     "pg": "^8.11.3",
     "pg-hstore": "^2.3.4",
-    "sequelize": "^6.37.1",
+    "sequelize": "^6.37.2",
     "sequelize-cli": "^6.6.2",
     "speakeasy": "^2.0.0",
     "sqlite": "^5.1.1",

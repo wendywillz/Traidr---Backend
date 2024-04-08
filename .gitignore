@@ -17,9 +17,9 @@ dist
 node_modules
 dist
 dist-ssr
-src/database
+# src/database
 *.local
-src/database/*
+# src/database/*
 public/uploads/*
 # Editor directories and files
 .vscode/*
@@ -31,5 +31,5 @@ public/uploads/*
 *.njsproj
 *.sln
 *.sw?
-src/database
-database
+# src/database
+# database
