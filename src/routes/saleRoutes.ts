@@ -1,12 +1,12 @@
 import express from "express";
-import { createSale, getSaleSummary, deleteSale, cancelSaleAndOrder, completeSaleAndClearCart } from "../controller/saleController";
+import { createSale, getSaleReceipt, deleteSale, cancelSaleAndOrder, completeSaleAndClearCart } from "../controller/saleController";
 
 import { cancelDeliverySaleAndOrder } from "../controller/deliveryController";
 
 const router = express.Router();
 router.post('/create-sale', createSale)
 
-router.get('/get-sale-summary', getSaleSummary)
+router.get('/receipt', getSaleReceipt)
 router.post('/complete-sale', completeSaleAndClearCart)//not yet implemented on frontend
 
 
