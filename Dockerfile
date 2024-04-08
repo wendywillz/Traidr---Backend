@@ -1,8 +1,14 @@
-# syntax=docker/dockerfile:1
+FROM node:20-alpine
 
-FROM node:18-alpine
-WORKDIR /app
-COPY . .
-RUN yarn install --production
-CMD ["node", "src/app.ts"]
-EXPOSE 3000
+# Create app directory
+WORKDIR /src/app
+
+COPY ./ ./
+
+RUN npm install
+
+RUN npm run build
+
+CMD [ "npm", "dev" ]
+
+EXPOSE 5000
