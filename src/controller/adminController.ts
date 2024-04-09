@@ -3,6 +3,7 @@ import User from "../model/user";
 import ShopModel from '../model/shop';
 import { Request, Response } from 'express';
 import UserActivity from "../model/userActivity";
+import Sale from "../model/sale";
 import jwt from 'jsonwebtoken';
 import LastActive from "../model/lastActive";
 
@@ -305,6 +306,36 @@ export const getUserDemographicsByAge = async (req: Request, res: Response): Pro
     res.status(500).json({ error: 'Internal server error' });
   }
 };
+
+
+
+export const getAdminDashboardSummary = async(req: Request, res: Response):Promise<void>=>{
+  
+let a = []
+  const allSales = await Sale.findAll() //{attributes:[`saleTotal`]}
+  const totalCompletedOrders =  await Sale.count()
+  const totalSellers = await User.count({where:{isSeller: true}})
+  const totalSalesIncome = allSales.reduce(
+    (acc, curr)=> acc + curr.saleTotal,
+    0
+  )
+  
+
+  const adminDataSummary = {
+    totalOrders: totalCompletedOrders,
+    totalTenants:totalSellers,
+    totalRevenue: totalSalesIncome
+  }
+  res.json({adminDataSummary})
+
+}
+
+
+
+
+
+
+
 
 
 // Define interface for an order

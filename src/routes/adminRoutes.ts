@@ -1,6 +1,6 @@
 import express from "express";
 
-import { calculateAverageUsageTimeForAllUser, checkAndVerifyAdminToken, getAllUsersGender, getAverageUsageTimeForAllUser, getDailyActiveUser, getMonthlyActiveUser, updateLastActiveAt, completedOrdersByUser} from "../controller/adminController";
+import { calculateAverageUsageTimeForAllUser, checkAndVerifyAdminToken, getAllUsersGender, getAverageUsageTimeForAllUser, getDailyActiveUser, getMonthlyActiveUser, updateLastActiveAt, completedOrdersByUser, getAdminDashboardSummary} from "../controller/adminController";
 
 
 const router = express.Router();
@@ -21,6 +21,10 @@ router.post('/send-last-active-time', updateLastActiveAt)
 router.get('/get-daily-active-user', getDailyActiveUser)
 
 router.get('/get-monthly-active-user', getMonthlyActiveUser)
+
+//endpoint to get admin-dashboard-summary for the data cards
+router.get('/get-dashboard-summary', getAdminDashboardSummary)
+
 
 // Endpoint for creating completedOrders
 router.get('/completed-orders-by-user', completedOrdersByUser);

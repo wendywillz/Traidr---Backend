@@ -19,7 +19,7 @@ import orderRouter from './routes/orderRoute'
 import saleRouter from './routes/saleRoutes'
 import deliveryRouter from './routes/deliveryRoutes'
 import wishListRouter from './routes/wishListRoutes'
-import DB from './database/database.config';
+import DB from './personal-database/database.config';
 dotenv.config();
 
 DB.sync()

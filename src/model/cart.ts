@@ -1,8 +1,6 @@
-/*NOTE: THE CART TABLE IS JUST A WAY TO GIVE ALL THE CART ITEMS FOR A USER HAVE ONE ID. IT DOES NOT NEED ANY OTHER COLUMNS  */
-
-
 import { DataTypes, Model } from 'sequelize';
 import sequelize from '../database/database.config';
+//import sequelize from '../personal-database/database.config';
 import { v4 as uuidv4 } from 'uuid';
 class Cart extends Model {
   public cartId!: string;
