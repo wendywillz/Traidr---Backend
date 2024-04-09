@@ -141,6 +141,34 @@ export const getWishListItems = async(req:Request, res:Response)=>{
      
 }
 
+export const getWishListCount = async(req:Request, res:Response)=>{
+    const userId = await getUserIdFromToken(req, res)
+    const userWishList = await WishList.findOne({where:{userId:userId}})
+    if(!userWishList){
+        res.json({error: `WishList does not exist`})
+        console.log(`Wish List not found`);
+        return
+    }
+    const userWishListId = userWishList?.dataValues.wishListId
+    const wishListLength = await WishListItem.count({where:{
+        userId:userId,
+        wishListId: userWishListId
+    }})
+    if(!wishListLength){
+        res.json({error: `WishListItems do not exist`})
+        console.log(`WishListItems do not exist`);
+        return
+    }
+
+    const wishListItemNumber = {
+        wishListItemCount:wishListLength 
+    }
+    res.json({wishListItemNumber})
+    
+
+
+}
+
 export const deleteWishListItem = async(req:Request, res:Response)=>{
     const currentUserId = await getUserIdFromToken(req, res)
     const {productId} = req.body
