@@ -98,6 +98,11 @@ export const getUserCartItems = async(req:Request, res:Response)=>{
         userId: userId 
      }})
 
+     if(!userCartItems){
+        res.json({message: `Cart is empty`})
+        return
+     }
+
      let cartProducts:Product[] =[]
      for(let item of userCartItems){
         let cartProduct= await Product.findByPk(item.dataValues.productId)

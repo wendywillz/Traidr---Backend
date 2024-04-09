@@ -1,13 +1,13 @@
 import express from "express";
-import { addToWishList, getWishListItems, deleteWishListItem } from "../controller/wishListController";
+import { addToWishList, getWishListItems, deleteWishListItem, getWishListCount } from "../controller/wishListController";
 
 
 
 const router = express.Router();
  router.post('/add-item/', addToWishList)
-
- router.get('/get-items/', getWishListItems)
  router.post('/delete-item/', deleteWishListItem)
+ router.get('/get-items/', getWishListItems)
+ //router.get('/get-count', getWishListCount)
 
 
 export default router;
