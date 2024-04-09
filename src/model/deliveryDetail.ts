@@ -1,5 +1,6 @@
 import { DataTypes, Model } from 'sequelize';
 import sequelize from '../database/database.config';
+//import sequelize from '../personal-database/database.config';
 import { v4 as uuidv4 } from 'uuid';
 class DeliveryDetail extends Model {
   public id!: string;

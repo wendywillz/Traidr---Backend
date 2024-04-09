@@ -19,7 +19,8 @@ dist
 dist-ssr
 # src/database
 *.local
-# src/database/*
+#src/database/*
+src/personal-database/*
 public/uploads/*
 # Editor directories and files
 .vscode/*

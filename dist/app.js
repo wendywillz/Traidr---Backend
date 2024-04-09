@@ -24,7 +24,7 @@ const orderRoute_2 = __importDefault(require("./routes/orderRoute"));
 const saleRoutes_1 = __importDefault(require("./routes/saleRoutes"));
 const deliveryRoutes_1 = __importDefault(require("./routes/deliveryRoutes"));
 const wishListRoutes_1 = __importDefault(require("./routes/wishListRoutes"));
-const database_config_1 = __importDefault(require("./database/database.config"));
+const database_config_1 = __importDefault(require("./personal-database/database.config"));
 dotenv_1.default.config();
 database_config_1.default.sync()
     .then(() => {
