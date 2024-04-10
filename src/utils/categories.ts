@@ -1,7 +1,12 @@
 export const productCategories = [
-    "Home Appliances",
     "Antiques",
+    "Children",
+    "Clothing and Accessories",
+    "DIY and Tools",
+    "Electronics",
     "Furniture",
-    "Kids Clothes",
-    "Adult Clothes",
+    "Home Appliances",
+    "Kitchen",
+    "Stationery and Office Supplies",
+    "Toys"
 ]

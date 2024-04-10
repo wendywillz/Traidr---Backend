@@ -100,7 +100,7 @@ export const getProductById = async (req: Request, res: Response): Promise<void>
     try {
   
       const page = parseInt(req.query.page as string) || 1;
-      const pageSize = parseInt(req.query.pageSize as string) || 10;
+      const pageSize = parseInt(req.query.pageSize as string) || 9;
       const offset = (page - 1) * pageSize;
       
   
@@ -172,6 +172,20 @@ export const getProductById = async (req: Request, res: Response): Promise<void>
     }
   }
   
+
+export const getProductCount = async(req:Request, res:Response):Promise<void>=>{
+  try {
+    const totalProductCount = await Product.count()
+    const productCount = {
+      totalProductCount: totalProductCount
+    }
+    res.json({productCount})
+  } catch (error) {
+    res.json({error:`${error}`})
+  }
+  
+  
+}
   
   
   

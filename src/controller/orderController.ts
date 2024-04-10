@@ -25,11 +25,11 @@ import { getUserIdFromToken } from '../utils/getModelId';
   const currentUserId = await getUserIdFromToken(req, res)
   const userCart = await Cart.findOne({where:{userId:currentUserId}})
   if(!userCart){
-    res.json({message: `Cart Does not exist`})
+    res.json({error: `Cart Does not exist`})
   }
   const currentUserCartId = userCart?.cartId
   if(!currentUserCartId){
-    res.json({message: `Cannot find cart with that id`})
+    res.json({error: `Cannot find cart with that id`})
   }
 
 const currentCartItems = await CartItem.findAll({
@@ -39,14 +39,13 @@ const currentCartItems = await CartItem.findAll({
   }
 })
 
-
-
   const exisitingOrder = await Order.findOne({
     where:{
       userId:currentUserId,
       cartId: currentUserCartId
     }
   })
+  
   if(exisitingOrder){
     res.json({message:`Order Already exists`})
     return
