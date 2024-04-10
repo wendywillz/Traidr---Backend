@@ -1,5 +1,5 @@
 import express from 'express';
-import { addNewProduct, getProductsByShopId, getAllProducts, getProductById } from '../controller/productController';
+import { addNewProduct, getProductsByShopId, getAllProducts, getProductById, getProductCount } from '../controller/productController';
 import multer from 'multer';
 import path from 'node:path';
 import fs from 'node:fs';
@@ -33,6 +33,7 @@ router.post('/add-product/:shopId', upload.fields([{ name: 'productPhoto', maxCo
 router.get('/get-products/:shopId', getProductsByShopId); 
 router.get('/get-all-products', getAllProducts); 
 router.get('/get-single-product/:productId', getProductById);
+router.get('/get-product-count', getProductCount);
 
 
 export default router;
