@@ -1,6 +1,7 @@
 import { Op } from "sequelize";
 import User from "../model/user";
 import ShopModel from '../model/shop';
+import Shop from "../model/shop";
 import { Request, Response } from 'express';
 import UserActivity from "../model/userActivity";
 import Sale from "../model/sale";
@@ -330,6 +331,38 @@ let a = []
 
 }
 
+
+
+
+export const getTenantDetails = async(req: Request, res: Response)=>{
+  
+  const tenantDetails = await User.findAll({
+     where: { isSeller: true },
+      attributes: ['userId', 'name', 'gender', 'age', 'shopName', 'updatedAt'], // Specify the fields you want from the 
+    })
+   
+    let tenantsShopDetails = []
+   
+   let tenantShopDetail = {}
+    for (let tenant of tenantDetails){
+     const tenantShop = await ShopModel.findOne({where:{shopOwner: tenant.dataValues.userId}})
+     if(!tenantShop) continue
+
+     let tenantShopDetail = {
+       userId: tenant.userId,
+       name: tenant.name,
+       gender:tenant.gender,
+       age: tenant.age,
+       shopName:tenantShop.shopName,
+       shopCreatedAt: new Date(tenantShop.dataValues.createdAt).toDateString()
+     }
+     tenantsShopDetails.push(tenantShopDetail)
+     
+    }
+    res.json({tenantsShopDetails})
+
+
+}
 
 
 
