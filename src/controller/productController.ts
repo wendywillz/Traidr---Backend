@@ -12,7 +12,6 @@ const BACKEND_URL = process.env.BACKEND_URL;
 
 export const addNewProduct = async (req: Request, res: Response): Promise<void> => {
  try {
-    console.log("req.body", req.body)
     const { shopId } = req.params;
     if (!(req.files as unknown as { [fieldname: string]: Express.Multer.File[]; }).productPhoto) {
       res.json({ noPhoto: 'Photos are required' });
@@ -35,8 +34,6 @@ export const addNewProduct = async (req: Request, res: Response): Promise<void> 
         console.log("photoPath", photoPath)
         photoPaths.push(photoPath);
       });
-
-      console.log("photoPaths", photoPaths)
 
       let videoPath = null;
       if (video) {

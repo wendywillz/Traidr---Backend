@@ -8,7 +8,6 @@ import jwt from 'jsonwebtoken';
 import { config } from 'dotenv';
 
 config();
-const BACKEND_URL = process.env.BACKEND_URL;
 const secret: string = process.env.secret as string;
 
 
@@ -115,7 +114,6 @@ export const getSpecificDeliveryId = async(currentUserId:string)=>{
 export const getUserIdFromToken = async(req:Request, res:Response)=>{
     //Using JWT to get the user
     const token = req.headers.authorization?.split(' ')[1]
-    let userId;  
     if (!token) {
         res.json({ noTokenError: 'Unauthorized - Token not provided' })
       } else {
@@ -123,10 +121,8 @@ export const getUserIdFromToken = async(req:Request, res:Response)=>{
         const user = await User.findOne({
           where: { email: decoded.userEmail }
         })
-        userId = user?.dataValues.userId
+      const userId = user?.dataValues.userId
+      return userId
       }
-      const response ={
-        userId: userId
-      }
-    return userId
+    
 }

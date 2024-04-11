@@ -18,6 +18,7 @@ class User extends Model {
   public isSeller!: boolean;
   public gender!: string|null;
   public age!: number|null;
+  public dateOfBirth!: number|null;
   public address!: string|null;
   public shopName!: string|null;
   public profilePic!: string|null;
@@ -45,6 +46,10 @@ User.init(
       allowNull: true,
     },
     hearAboutUs: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    dateOfBirth: {
       type: DataTypes.STRING,
       allowNull: true,
     },

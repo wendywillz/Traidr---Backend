@@ -12,7 +12,7 @@ const storage = multer.diskStorage({
         const dir = path.resolve(__dirname, '..', '..', 'public','uploads')
         try {
             fs.mkdirSync(dir, { recursive: true })
-            console.log("dir", dir)
+            
         } catch (error) {
             console.log("error", error)
         }

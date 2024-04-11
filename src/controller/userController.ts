@@ -38,7 +38,8 @@ const insertIsAdmin = isAdmin ? true : false;
         name,
         email,
         password: hashedPassword,
-        hearAboutUs,
+      hearAboutUs,
+        dateOfBirth,
         age:calculatedAge,
       gender,
         isAdmin: insertIsAdmin
@@ -90,7 +91,8 @@ const insertIsAdmin = isAdmin ? true : false;
       } 
       }
     }
-  }catch (error) {
+  } catch (error) {
+    console.log("error", error)
   res.json({
     internalServerError: 'Internal server error'
   })
@@ -210,7 +212,9 @@ export async function checkAndVerifyUserToken(req: Request, res: Response): Prom
         gender: user?.dataValues.gender,
         age: user?.dataValues.age,
         address: user?.dataValues.address,
-        shopName: user?.dataValues.shopName
+        phoneNumber: user?.dataValues.phoneNumber,
+        shopName: user?.dataValues.shopName,
+        dateOfBirth: user?.dataValues.dateOfBirth
       }
       res.json({ userDetail })
 
@@ -301,51 +305,51 @@ export const getUserShopId = async (req: Request, res: Response) => {
   }
 }
 
-export const updateUser = async(req: Request, res:Response)=>{
-  const userId = await getUserIdFromToken(req, res)
-  const {firstName, lastName, email, phoneNumber, gender, dateOfBirth, address, shopName} = req.body
-  
-  const profilePic = (req.files as unknown as { [fieldname: string]: Express.Multer.File[]; })? (req.files as unknown as { [fieldname: string]: Express.Multer.File[]; })[0] : null;
-
-  let photoPath = null;
-      if (profilePic) {
-        const sanitizedTitle = (firstName + " " + lastName).replace(/[^a-z0-9]/gi, '_').toLowerCase(); // Example sanitization
-        const newFilename = `${sanitizedTitle}_`; // Example filename construction
-        // const videoUndefinedPath = path.join(__dirname, "../../public/uploads", profilePic.filename);
-        // const renamedVideoPath = path.join(__dirname, "../../public/uploads", newFilename);
-        // fs.renameSync(videoUndefinedPath, renamedVideoPath);
-        photoPath = `${BACKEND_URL}/uploads/${newFilename}`;
-      }
-  
-  
-  
-  
-  
-  
-  const user = await User.findByPk(userId)
-  if(!user){
-    res.json({
-      message: `Error getting user`
-    })
-  }
-  // let convertedAge = Date.parse(dateOfBirth)
-  const calculatedAge = Math.trunc((Date.now() - Date.parse(dateOfBirth))/31557600000)
+export const updateUser = async (req: Request, res: Response) => {
   try {
-    const updatedUser = await user?.update({
-      name: `${firstName} ${lastName}`,
-      email: email,
-      phoneNumber: phoneNumber,
-      gender: gender,
-      age: calculatedAge,
-      address: address,
-      shopName: shopName,
-      profilePic:photoPath,
-    })
-    if(updatedUser){
-      res.json({success: `User updated successfully`})
-    }
-  } catch (error) {
+  console.log("req.body", req.body, req.file, req.files)
+    const userId = await getUserIdFromToken(req, res);
+    console.log("userId", userId)
+  if (!userId) {
+    res.json({ error: 'User not found' });
+    return;
   }
- await user?.save({fields:['name', 'email', 'phoneNumber', 'gender', 'address', 'shopName']})
+  const { firstName, lastName, phoneNumber, gender, address, shopName } = req.body
+  
+  const photoPath = `${BACKEND_URL}/uploads/profilePics/${req.file?.filename}`;
+      
+  // if (req.file) {
+  //   const profilePic = (req.file as unknown as { [fieldname: string]: Express.Multer.File; }).profilePicture;
+      
+  //   if (profilePic) {
+  //     const sanitizedTitle = (firstName + " " + lastName).replace(/[^a-z0-9]/gi, '_').toLowerCase();
+  //     const newFilename = `${sanitizedTitle}_${Date.now()}${path.extname(profilePic.filename)}`; // Example filename construction
+  //     const renamedPhotoPath = path.join(__dirname, "../../public/uploads/profilePics", newFilename);
+  //     const photoUndefinedPath = path.join(__dirname, "../../public/uploads/profilePics", profilePic.filename);
+  //     fs.renameSync(photoUndefinedPath, renamedPhotoPath);
+  //     photoPath = `${BACKEND_URL}/uploads/profilePics/${newFilename}`;
+  //     console.log("photoPath", photoPath)
+  //   }
+  // }
+  const user = await User.findOne({ where: { userId } });
+
+  const updatedUser = await user?.update({
+    name: `${firstName} ${lastName}`,
+    phoneNumber: phoneNumber,
+    gender: gender,
+    address: address,
+    shopName: shopName,
+    profilePic: photoPath,
+  })
+    if (updatedUser) {
+    console.log("success", updatedUser.dataValues)
+      res.json({ updatedUser })
+      return
+  }
+  
+  } catch (error) {
+  console.log("error", error)
+  res.json({ error: 'Error updating user' })
+}
 }
 
