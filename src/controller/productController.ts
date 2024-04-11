@@ -101,7 +101,7 @@ export const getProductById = async (req: Request, res: Response): Promise<void>
       const offset = (page - 1) * pageSize;
       
   
-      const { minPrice, maxPrice, price, search, category, sort } = req.query;
+      const { minPrice, maxPrice, price, search, category, sort, color } = req.query;
    
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const whereCondition: any = {};
@@ -152,6 +152,11 @@ export const getProductById = async (req: Request, res: Response): Promise<void>
     sortOrder = [ "updatedAt", "DESC"]
   }
   
+  if(color){
+    whereCondition.productTitle= {
+        [Op.iLike] : `%${color}%`
+      }  
+    }
   
       const products = await Product.findAll({
         where: whereCondition,
