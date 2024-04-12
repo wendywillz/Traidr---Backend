@@ -8,5 +8,6 @@ export const productCategories = [
     "Home Appliances",
     "Kitchen",
     "Stationery and Office Supplies",
-    "Toys"
+    "Toys",
+    ""
 ]

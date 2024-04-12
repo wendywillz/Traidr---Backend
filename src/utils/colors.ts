@@ -4,5 +4,7 @@ export const productColors = [
     "Yellow",
     "Pink",
     "White",
-    "Black"
+    "Black",
+    "Gold",
+    ""
 ]
