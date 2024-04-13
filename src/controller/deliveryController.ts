@@ -2,11 +2,7 @@ import { Request, Response } from 'express';
 
 import Order from '../model/order';
 import OrderItem from '../model/orderItem';
-import User from '../model/user';
 import Cart from '../model/cart';
-import CartItem from '../model/cartItem';
-import Product from '../model/product';
-import ShopModel from '../model/shop';
 import Sale from '../model/sale';
 import DeliveryDetail from '../model/deliveryDetail';
 import { getUserIdFromToken } from '../utils/getModelId';

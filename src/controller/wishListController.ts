@@ -10,7 +10,7 @@ const secret: string = process.env.secret as string;
 
 
 
-const createNewWishList= async (currentUserId: string)=>{
+export const createNewWishList= async (currentUserId: string)=>{
     const newUserWishList = await WishList.create({
         userId: currentUserId
     })

@@ -3,13 +3,14 @@ import Product from '../model/product';
 import Cart from '../model/cart';
 import CartItem from '../model/cartItem';
 import ShopModel from '../model/shop';
-import User from '../model/user';
-import jwt from 'jsonwebtoken';
+import WishList from '../model/wishList';
+import WishListItem from '../model/wishListItem';
 import { config } from 'dotenv';
 config();
 const secret: string = process.env.secret as string;
 
 import { getUserIdFromToken } from '../utils/getModelId';
+import { createNewWishList } from './wishListController';
 
 // const BACKEND_URL = process.env.BACKEND_URL;
 
@@ -169,6 +170,69 @@ export const getUserCartItems = async(req:Request, res:Response)=>{
      res.json({success: `CartItem deleted`})
  }
 
+
+ export const moveItemToWishList = async(req:Request, res:Response)=>{
+    const currentUserId = await getUserIdFromToken(req, res)
+    const {productId} = req.body
+    
+    const selectedCartItem = await CartItem.findOne({where:{
+        userId: currentUserId,
+        productId:productId
+    }})
+    if(!selectedCartItem){
+        res.json({message:`Item does not exist in cart`})
+        return
+    }
+
+    const currentProduct = await Product.findByPk(productId)
+    if(!currentProduct){
+        res.json({message: `Product does not exist`})
+        console.log(`Product ${productId} does not exist`);
+        return
+    }
+    
+    const productShopId = currentProduct?.shopId
+    const existingUserWishList = await WishList.findOne({where:{userId: currentUserId}})
+
+    let userWishListId;
+    if(!existingUserWishList){
+        const newUserWishList = await createNewWishList(currentUserId)
+       userWishListId = newUserWishList.dataValues?.wishListId
+       const newWishListItem =
+      await WishListItem.create({
+        wishListId: userWishListId,
+        userId: currentUserId,
+        productId: productId,
+        shopId: productShopId
+    })
+      } else {userWishListId = existingUserWishList?.dataValues?.wishListId }
+      const existingWishListItem = await WishListItem.findOne({where:{productId: productId}})
+
+      if(!existingWishListItem){
+          try {
+              const newWishListItem = await WishListItem.create({
+                  wishListId: userWishListId,
+                  userId: currentUserId,
+                  productId: productId,
+                  shopId: productShopId
+              })
+              selectedCartItem.destroy()
+
+              res.json({success: `Item removed from cart and added to wishlist`})
+
+          } catch (error) {
+              res.json({errorMessage: `error creating wishListItem. Reason: ${error}`})
+              console.log(`Error creating wishList Item`);
+          }
+      } else{
+          console.log(`Item is already in wishlist`);
+          selectedCartItem.destroy()
+         res.json({success: `Item removed from cart but already to wishlist`})
+
+      }
+  
+
+ }
 
 
 
