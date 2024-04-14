@@ -1,12 +1,11 @@
 import { Request, Response } from 'express';
 import Product from '../model/product';
-import Shop from '../model/shop';
 import WishList from '../model/wishList';
 import WishListItem from '../model/wishListItem';
 import { getUserIdFromToken } from '../utils/getModelId';
 import { config } from 'dotenv';
 config();
-const secret: string = process.env.secret as string;
+
 
 
 
@@ -40,7 +39,7 @@ export const addToWishList = async(req:Request, res:Response)=>{
     if(!existingUserWishList){
         const newUserWishList = await createNewWishList(currentUserId)
        userWishListId = newUserWishList.dataValues?.wishListId
-       const newWishListItem =
+       
       await WishListItem.create({
         wishListId: userWishListId,
         userId: currentUserId,
@@ -59,7 +58,7 @@ export const addToWishList = async(req:Request, res:Response)=>{
 
     if(!existingWishListItem){
         try {
-            const newWishListItem = await WishListItem.create({
+             await WishListItem.create({
                 wishListId: userWishListId,
                 userId: currentUserId,
                 productId: currentProductId,
@@ -95,9 +94,9 @@ export const getWishListItems = async(req:Request, res:Response)=>{
         userId: userId 
      }})
 
-     let wishListProducts:Product[] =[]
-     for(let item of userWishListItems){
-        let wishListProduct= await Product.findByPk(item.dataValues.productId)
+     const wishListProducts:Product[] =[]
+     for(const  item of userWishListItems){
+        const  wishListProduct= await Product.findByPk(item.dataValues.productId)
         if(!wishListProduct){continue}
         wishListProducts.push(wishListProduct)
      }
@@ -118,9 +117,9 @@ export const getWishListItems = async(req:Request, res:Response)=>{
          productDescription: '',
         // sourceShop: ''
      }
-     let wishListProductDetails:WishListProductDetail[]=[]
+     const  wishListProductDetails:WishListProductDetail[]=[]
 
-     for (let wishListProduct of wishListProducts){
+     for (const  wishListProduct of wishListProducts){
         // let correspondingWishListItem = await WishListItem.findOne({where:{productId:wishListProduct.dataValues.productId}});
         // let correspondingShop = await Shop.findByPk(wishListProduct.dataValues.shopId)
         
@@ -183,3 +182,35 @@ export const deleteWishListItem = async(req:Request, res:Response)=>{
     selectedWishListItem?.destroy()
      res.json({success: `Wish List Item deleted`})
  }
+
+export const getWishListProductIds = async(req:Request, res:Response)=>{
+    const userId = await getUserIdFromToken(req, res)
+      const userWishList = await WishList.findOne({where:{userId:userId}})
+      if(!userWishList){
+          res.json({message: `WishList Does not exist`})
+          return
+       }
+       const wishListId = userWishList?.dataValues?.wishListId
+
+
+     const userWishListItems = await WishListItem.findAll({where:{
+        wishListId:wishListId,
+        userId: userId 
+     }, attributes:[`productId`]})
+
+
+     if(!userWishListItems){
+        console.log(`No wish List Items`);
+        res.json({message: `No Wish list items`})
+        return
+     }
+
+     const userWishListItemIds = []
+
+     for(const item of userWishListItems){
+        userWishListItemIds.push(item.productId)
+     }
+
+     res.json({userWishListItemIds})
+
+}
