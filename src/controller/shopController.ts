@@ -48,3 +48,25 @@ export const getShopById = async (req: Request, res: Response): Promise<void> =>
     res.json({ error: 'Error getting products' });
   }
 }
+
+export const getShopOwnerByShopId = async(req:Request, res:Response): Promise<void> =>{
+  const {shopId} = req.params
+
+  const specifiedShop = await ShopModel.findByPk(shopId)
+  if(!specifiedShop){
+    console.log(`Shop not found`);
+    res.json({error: `Shop not found`})
+    return
+  }
+  const shopOwnerId = specifiedShop?.dataValues.shopOwner
+
+  const shopOwner = await User.findByPk(shopOwnerId, {attributes:[`name`, `email`, `phoneNumber`, `profilePic`]})
+
+  if(!shopOwner){
+    console.log(`Shop Owner not Found`);
+    res.json({error: `Shop Owner not found`})
+    return
+  }
+
+  res.json({shopOwner})
+}
