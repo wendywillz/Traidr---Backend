@@ -1,5 +1,4 @@
 
-
 import { Sequelize } from "sequelize";
 const DB = new Sequelize("wqsmzjza", "wqsmzjza", "f-_9BIwS8-atgSnUKRAvJZ_7BPti-uAM",{
   dialect: 'postgres',

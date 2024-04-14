@@ -7,7 +7,7 @@ import WishList from '../model/wishList';
 import WishListItem from '../model/wishListItem';
 import { config } from 'dotenv';
 config();
-const secret: string = process.env.secret as string;
+// const secret: string = process.env.secret as string;
 
 import { getUserIdFromToken } from '../utils/getModelId';
 import { createNewWishList } from './wishListController';
@@ -26,7 +26,6 @@ export const addToCart = async(req:Request, res:Response)=>{
     // const currentProductId = req.params.productId
     const currentUserId = await getUserIdFromToken(req, res)
     const {currentProductId, productQuantity} = req.body
-    let cart;
 
     const currentProduct = await Product.findByPk(currentProductId)
     if(!currentProduct){
@@ -43,7 +42,7 @@ export const addToCart = async(req:Request, res:Response)=>{
     if(!existingUserCart){
         const newUserCart = await createNewCart(currentUserId)
        userCartId = newUserCart.dataValues?.cartId
-       const newCartItem =
+    
       await CartItem.create({
         cartId: userCartId,
         userId: currentUserId,
@@ -63,7 +62,7 @@ export const addToCart = async(req:Request, res:Response)=>{
 
     if(!existingCartItem){
         try {
-            const newCartItem = await CartItem.create({
+             await CartItem.create({
                 cartId: userCartId,
                 userId: currentUserId,
                 productId: currentProductId,
@@ -104,9 +103,9 @@ export const getUserCartItems = async(req:Request, res:Response)=>{
         return
      }
 
-     let cartProducts:Product[] =[]
-     for(let item of userCartItems){
-        let cartProduct= await Product.findByPk(item.dataValues.productId)
+      const cartProducts:Product[] =[]
+     for( const item of userCartItems){
+         const cartProduct= await Product.findByPk(item.dataValues.productId)
         if(!cartProduct){continue}
         cartProducts.push(cartProduct)
      }
@@ -129,11 +128,11 @@ export const getUserCartItems = async(req:Request, res:Response)=>{
          productTotal:0,
          sourceShop: ''
      }
-     let cartProductDetails:CartProductDetail[]=[]
+     const cartProductDetails:CartProductDetail[]=[]
 
-     for (let cartProduct of cartProducts){
-        let correspondingCartItem = await CartItem.findOne({where:{productId:cartProduct.dataValues.productId}});
-        let correspondingShop = await ShopModel.findByPk(cartProduct.dataValues.shopId)
+     for ( const cartProduct of cartProducts){
+         const correspondingCartItem = await CartItem.findOne({where:{productId:cartProduct.dataValues.productId}});
+         const correspondingShop = await ShopModel.findByPk(cartProduct.dataValues.shopId)
         
         cartProductDetail = {
             productId: cartProduct.dataValues.productId,
@@ -198,8 +197,8 @@ export const getUserCartItems = async(req:Request, res:Response)=>{
     if(!existingUserWishList){
         const newUserWishList = await createNewWishList(currentUserId)
        userWishListId = newUserWishList.dataValues?.wishListId
-       const newWishListItem =
-      await WishListItem.create({
+    
+       await WishListItem.create({
         wishListId: userWishListId,
         userId: currentUserId,
         productId: productId,
@@ -210,7 +209,7 @@ export const getUserCartItems = async(req:Request, res:Response)=>{
 
       if(!existingWishListItem){
           try {
-              const newWishListItem = await WishListItem.create({
+               await WishListItem.create({
                   wishListId: userWishListId,
                   userId: currentUserId,
                   productId: productId,
