@@ -79,7 +79,7 @@ User.init(
       allowNull: false,
     },
     phoneNumber:{
-      type: DataTypes.BIGINT,
+      type: DataTypes.STRING,
       allowNull: true,
     },
     resetPasswordExpiration: {

@@ -335,9 +335,9 @@ export const updateUser = async (req: Request, res: Response) => {
 
   const updatedUser = await user?.update({
     name: `${firstName} ${lastName}`,
-    phoneNumber: phoneNumber,
+    phoneNumber: phoneNumber ? phoneNumber : "",
     gender: gender,
-    address: address,
+    address: address ? address : "",
     shopName: shopName,
     profilePic: photoPath,
   })
