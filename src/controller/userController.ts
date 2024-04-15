@@ -307,16 +307,14 @@ export const getUserShopId = async (req: Request, res: Response) => {
 
 export const updateUser = async (req: Request, res: Response) => {
   try {
-  console.log("req.body", req.body, req.file, req.files)
     const userId = await getUserIdFromToken(req, res);
-    console.log("userId", userId)
   if (!userId) {
     res.json({ error: 'User not found' });
     return;
   }
-  const { firstName, lastName, phoneNumber, gender, address, shopName } = req.body
+  const { firstName, lastName, phoneNumber, gender, address, shopName, profilePic } = req.body
   
-  const photoPath = `${BACKEND_URL}/uploads/profilePics/${req.file?.filename}`;
+  const photoPath = req?.file ? `${BACKEND_URL}/uploads/profilePics/${req.file?.filename}`: profilePic;
       
   // if (req.file) {
   //   const profilePic = (req.file as unknown as { [fieldname: string]: Express.Multer.File; }).profilePicture;
@@ -332,7 +330,6 @@ export const updateUser = async (req: Request, res: Response) => {
   //   }
   // }
   const user = await User.findOne({ where: { userId } });
-
   const updatedUser = await user?.update({
     name: `${firstName} ${lastName}`,
     phoneNumber: phoneNumber ? phoneNumber : "",
@@ -342,8 +339,7 @@ export const updateUser = async (req: Request, res: Response) => {
     profilePic: photoPath,
   })
     if (updatedUser) {
-    console.log("success", updatedUser.dataValues)
-      res.json({ updatedUser })
+      res.json({ user })
       return
   }
   

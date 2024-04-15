@@ -35,8 +35,6 @@ export const addToCart = async(req:Request, res:Response)=>{
     
     const productShopId = currentProduct?.shopId
     const existingUserCart = await Cart.findOne({where:{userId: currentUserId}})
-    console.log(existingUserCart);
-        
     
     let userCartId;
     if(!existingUserCart){
@@ -53,10 +51,6 @@ export const addToCart = async(req:Request, res:Response)=>{
       } else {userCartId = existingUserCart?.dataValues?.cartId }
 
       
-
-        
-    
-      console.log(`NEW CART ITEM`, currentProductId);
      
     const existingCartItem = await CartItem.findOne({where:{productId: currentProductId}})
 

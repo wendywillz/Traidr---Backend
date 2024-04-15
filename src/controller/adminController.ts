@@ -1,7 +1,6 @@
 import { Op } from "sequelize";
 import User from "../model/user";
 import ShopModel from '../model/shop';
-import Shop from "../model/shop";
 import { Request, Response } from 'express';
 import UserActivity from "../model/userActivity";
 import Sale from "../model/sale";
@@ -119,12 +118,26 @@ export async function checkAndVerifyAdminToken(req: Request, res: Response): Pro
     } else {
         
       const decoded = jwt.verify(token, secret) as { userEmail: string }
-      const checkIfIsAdmin = await User.findOne({where:{email:decoded.userEmail, isAdmin:true}})
-        if (!checkIfIsAdmin) {
+      const user = await User.findOne({where:{email:decoded.userEmail, isAdmin:true}})
+        if (!user) {
             res.json({ unauthorized: "unauthorized" })
             return 
         }
-       res.json({ success: 'Authorized' }) 
+      const userDetail = {
+        userId: user?.dataValues.userId,
+        name: user?.dataValues.name,
+        email: user?.dataValues.email,
+        isAdmin: user?.dataValues.isAdmin,
+        isSeller: user?.dataValues.isSeller,
+        isVerified: user?.dataValues.isVerified,
+        gender: user?.dataValues.gender,
+        age: user?.dataValues.age,
+        address: user?.dataValues.address,
+        phoneNumber: user?.dataValues.phoneNumber,
+        shopName: user?.dataValues.shopName,
+        dateOfBirth: user?.dataValues.dateOfBirth
+      }
+       res.json({ userDetail }) 
       
 
       
@@ -312,7 +325,6 @@ export const getUserDemographicsByAge = async (req: Request, res: Response): Pro
 
 export const getAdminDashboardSummary = async(req: Request, res: Response):Promise<void>=>{
   
-let a = []
   const allSales = await Sale.findAll() //{attributes:[`saleTotal`]}
   const totalCompletedOrders =  await Sale.count()
   const totalSellers = await User.count({where:{isSeller: true}})
@@ -341,14 +353,13 @@ export const getTenantDetails = async(req: Request, res: Response)=>{
       attributes: ['userId', 'name', 'gender', 'age', 'shopName', 'updatedAt'], // Specify the fields you want from the 
     })
    
-    let tenantsShopDetails = []
+    const tenantsShopDetails = []
    
-   let tenantShopDetail = {}
-    for (let tenant of tenantDetails){
+    for (const tenant of tenantDetails){
      const tenantShop = await ShopModel.findOne({where:{shopOwner: tenant.dataValues.userId}})
      if(!tenantShop) continue
 
-     let tenantShopDetail = {
+     const tenantShopDetail = {
        userId: tenant.userId,
        name: tenant.name,
        gender:tenant.gender,
