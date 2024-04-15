@@ -2,7 +2,6 @@ import { Request, Response } from 'express';
 
 import Order from '../model/order';
 import OrderItem from '../model/orderItem';
-import User from '../model/user';
 import Cart from '../model/cart';
 
 import Product from '../model/product';
@@ -15,7 +14,7 @@ import CartItem from '../model/cartItem';
 
 
 export const createSale = async(req:Request, res:Response)=>{
-  const currentUserId = await getUserIdFromToken(req, res)  
+  const currentUserId:string = await getUserIdFromToken(req, res)  
   const {saleTotal} = req.body
 
   const currentUserCart = await Cart.findOne({
@@ -46,7 +45,7 @@ if(specifiedSale){
     return
 }
 
-const newSale = await Sale.create({
+await Sale.create({
     userId: currentUserId,
     orderId: specifiedOrderId,
     saleTotal: saleTotal,
@@ -98,10 +97,10 @@ export const getSaleReceipt = async(req:Request, res:Response)=>{
       }})
 
       
-      let orderedProducts:Product[] = []
+      const orderedProducts:Product[] = []
 
-  for(let item of userOrderedItems){
-    let orderedProduct= await Product.findByPk(item.dataValues.productId)
+  for(const item of userOrderedItems){
+    const orderedProduct= await Product.findByPk(item.dataValues.productId)
     if(!orderedProduct){continue}
     orderedProducts.push(orderedProduct)
  }
@@ -125,18 +124,18 @@ let orderedProductDetail:OrderedProductDetail = {
    productTotal:0,
    sourceShop: ''
 }
-let orderedProductDetails:OrderedProductDetail[]=[]
+const orderedProductDetails:OrderedProductDetail[]=[]
 
 
 
- for (let orderedProduct of orderedProducts){
-  let correspondingOrderItem = await OrderItem.findOne({
+ for (const orderedProduct of orderedProducts){
+  const correspondingOrderItem = await OrderItem.findOne({
     where:{
         userId: currentUserId,
         orderId: specifiedOrderId,
         productId: orderedProduct.dataValues.productId
     }})
-  let correspondingShop = await ShopModel.findByPk(orderedProduct.dataValues.shopId)
+  const correspondingShop = await ShopModel.findByPk(orderedProduct.dataValues.shopId)
   orderedProductDetail = {
     productId: orderedProduct.dataValues.productId,
     productTitle: orderedProduct.dataValues.productTitle,
@@ -217,10 +216,10 @@ export const getSaleSummaryById = async (req:Request, res:Response)=>{
    }})
 
    
-   let orderedProducts:Product[] = []
+   const orderedProducts:Product[] = []
 
-for(let item of userOrderedItems){
- let orderedProduct= await Product.findByPk(item.dataValues.productId)
+for(const item of userOrderedItems){
+ const orderedProduct= await Product.findByPk(item.dataValues.productId)
  if(!orderedProduct){continue}
  orderedProducts.push(orderedProduct)
 }
@@ -244,17 +243,17 @@ productQuantity: 0,
 productTotal:0,
 sourceShop: ''
 }
-let orderedProductDetails:OrderedProductDetail[]=[]
+const orderedProductDetails:OrderedProductDetail[]=[]
 
 
-for (let orderedProduct of orderedProducts){
-let correspondingOrderItem = await OrderItem.findOne({
+for (const orderedProduct of orderedProducts){
+const correspondingOrderItem = await OrderItem.findOne({
  where:{
      userId: currentUserId,
      orderId: specifiedOrderId,
      productId: orderedProduct.dataValues.productId
  }})
-let correspondingShop = await ShopModel.findByPk(orderedProduct.dataValues.shopId)
+const correspondingShop = await ShopModel.findByPk(orderedProduct.dataValues.shopId)
 orderedProductDetail = {
  productId: orderedProduct.dataValues.productId,
  productTitle: orderedProduct.dataValues.productTitle,
@@ -303,18 +302,20 @@ res.json({responseData})
 
 
 export const getAllOrderHistories = async(req:Request, res:Response)=>{
- const currentUserId = await getUserIdFromToken(req, res)
- const previousOrders = await Sale.findAll({
+ const currentUserId:string = await getUserIdFromToken(req, res)
+ const allPreviousOrders = await Sale.findAll({
    where:{
      userId: currentUserId,
      saleStatus : 'completed'
    }})
 
- if(!previousOrders) {
+ if(!allPreviousOrders) {
    res.json({message: `no previous orders found`})
    console.log(`No previous orders found`);
    return
  }
+
+ const previousOrders = allPreviousOrders.sort((a, b)=>{return b.dataValues.updatedAt - a.dataValues.updatedAt})
  
  res.json({previousOrders})
  console.log(`All previous orders sent`);
@@ -365,11 +366,11 @@ export const completeSaleAndClearCart = async(req:Request, res:Response)=>{
         return
     }
     
-   const updatedSale = specifiedSale.update({
+   specifiedSale.update({
     saleStatus: 'completed'
    })
 
-   const updatedOrder = specifiedOrder.update({
+   specifiedOrder.update({
     cartId:null
    })
     await CartItem.destroy({
