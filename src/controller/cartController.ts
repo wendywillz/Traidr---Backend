@@ -234,7 +234,41 @@ export const getUserCartItems = async(req:Request, res:Response)=>{
  }
 
 
+ export const getCartCount = async(req:Request, res:Response)=>{
+    const currentUserId = await getUserIdFromToken(req, res)
 
+    const userCartItem = await Cart.findOne({where:{userId: currentUserId}})
+
+    if(!userCartItem){
+        console.log(`Cart Not Found`);
+        res.json({message: `No such cart exists`})
+        return
+    }
+    const userCartId = userCartItem.dataValues.cartId
+
+    const userCartItems = await CartItem.findAll({
+        where:{
+            userId: currentUserId,
+            cartId: userCartId
+        },
+        attributes:[`productQuantity`]
+    })
+
+    if(!userCartItems){
+        console.log(`No cart items found`);
+        res.json({message: `Cart Items not found`})
+        return
+    }
+
+    const totalItems:number = userCartItems.reduce((acc, curr:CartItem)=>{
+        return acc + curr.productQuantity
+    },0)
+
+    const cartCount = {
+        totalCartCount: totalItems
+    }
+    res.json({cartCount})
+ }
 
 
 
