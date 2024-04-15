@@ -123,6 +123,7 @@ export async function checkAndVerifyAdminToken(req: Request, res: Response): Pro
             res.json({ unauthorized: "unauthorized" })
             return 
         }
+      console.log(" user", user.dataValues)
       const userDetail = {
         userId: user?.dataValues.userId,
         name: user?.dataValues.name,
@@ -135,7 +136,8 @@ export async function checkAndVerifyAdminToken(req: Request, res: Response): Pro
         address: user?.dataValues.address,
         phoneNumber: user?.dataValues.phoneNumber,
         shopName: user?.dataValues.shopName,
-        dateOfBirth: user?.dataValues.dateOfBirth
+        dateOfBirth: user?.dataValues.dateOfBirth,
+        profilePic: user?.dataValues.profilePic 
       }
        res.json({ userDetail }) 
       

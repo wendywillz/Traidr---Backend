@@ -214,7 +214,8 @@ export async function checkAndVerifyUserToken(req: Request, res: Response): Prom
         address: user?.dataValues.address,
         phoneNumber: user?.dataValues.phoneNumber,
         shopName: user?.dataValues.shopName,
-        dateOfBirth: user?.dataValues.dateOfBirth
+        dateOfBirth: user?.dataValues.dateOfBirth,
+        profilePic: user?.dataValues.profilePic
       }
       res.json({ userDetail })
 
