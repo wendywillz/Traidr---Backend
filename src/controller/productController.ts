@@ -153,10 +153,14 @@ export const getProductById = async (req: Request, res: Response): Promise<void>
   }
   
   if(color){
-    whereCondition.productTitle= {
+    whereCondition.productTitle = {
         [Op.iLike] : `%${color}%`
-      }  
+      };
+      whereCondition.productDescription = {
+        [Op.iLike] : `%${color}%`
+      }
     }
+    
   
       const products = await Product.findAll({
         where: whereCondition,

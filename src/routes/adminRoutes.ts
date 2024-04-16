@@ -1,6 +1,6 @@
 import express from "express";
 
-import { calculateAverageUsageTimeForAllUser, checkAndVerifyAdminToken, getAllUsersGender, getAverageUsageTimeForAllUser, getDailyActiveUser, getMonthlyActiveUser, updateLastActiveAt, completedOrdersByUser, getAdminDashboardSummary, getTenantDetails} from "../controller/adminController";
+import { calculateAverageUsageTimeForAllUser, checkAndVerifyAdminToken, getAllUsersGender, getAverageUsageTimeForAllUser, getDailyActiveUser, getMonthlyActiveUser, updateLastActiveAt, completedOrdersByUser, getAdminDashboardSummary, getTenantDetails, getProductRevenue, getTenantRevenue} from "../controller/adminController";
 
 
 const router = express.Router();
@@ -27,6 +27,12 @@ router.get('/get-dashboard-summary', getAdminDashboardSummary)
 
 //endpoint to get tenants database
 router.get('/get-tenant-db', getTenantDetails)
+
+//endpoint to get revenue by products
+router.get('/get-product-revenue', getProductRevenue)
+
+//endpoint to get revenue by vendor
+router.get('/get-tenant-revenue', getTenantRevenue)
 
 
 // Endpoint for creating completedOrders
