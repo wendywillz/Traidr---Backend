@@ -331,18 +331,21 @@ export const getUserDemographicsByAge = async (req: Request, res: Response): Pro
 export const getAdminDashboardSummary = async(req: Request, res: Response):Promise<void>=>{
   
   const allSales = await Sale.findAll() //{attributes:[`saleTotal`]}
+  const allOrderItems = await OrderItem.findAll()
   const totalCompletedOrders =  await Sale.count()
   const totalSellers = await User.count({where:{isSeller: true}})
   const totalSalesIncome = allSales.reduce(
     (acc, curr)=> acc + curr.saleTotal,
     0
   )
+  const totalItemsSold = allOrderItems.reduce((acc, curr)=> acc + curr.productQuantity,0)
   
 
   const adminDataSummary = {
     totalOrders: totalCompletedOrders,
     totalTenants:totalSellers,
-    totalRevenue: totalSalesIncome
+    totalRevenue: totalSalesIncome,
+    totalProductSold: totalItemsSold
   }
   res.json({adminDataSummary})
 
