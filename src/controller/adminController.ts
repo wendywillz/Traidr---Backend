@@ -6,6 +6,9 @@ import UserActivity from "../model/userActivity";
 import Sale from "../model/sale";
 import jwt from 'jsonwebtoken';
 import LastActive from "../model/lastActive";
+import OrderItem from "../model/orderItem";
+import Product from "../model/product";
+//import { all } from "axios";
 
 const secret = process.env.secret!
 export const getAllUsersGender = async (req: Request, res: Response): Promise<void> =>{
@@ -346,8 +349,202 @@ export const getAdminDashboardSummary = async(req: Request, res: Response):Promi
 }
 
 
+export const getProductRevenue = async(req:Request, res:Response):Promise<void>=>{
+const allSales = await Sale.findAll({where:{saleStatus: 'completed'}})
+if(!allSales){
+  res.json({message: `No Completed Sales Found`})
+  return
+}
+
+const allPurchasedItems = await OrderItem.findAll()
+if(!allPurchasedItems){
+  res.json({message: `No Completed orders Found`})
+  return
+}
+
+interface ProductSalesDetails{
+  productId: string;
+  totalQuantitySold: number
+}
+let
+ productSalesDetail:ProductSalesDetails = {
+  productId: allPurchasedItems[0].productId,
+  totalQuantitySold:allPurchasedItems[0].productQuantity,
+}
+
+const productSalesDetails: ProductSalesDetails[] = []
+for(const item of allPurchasedItems){
+  const existingItem = productSalesDetails.find((currentItem)=>{return currentItem.productId == item.productId})
+
+  if(!existingItem){
+     productSalesDetail ={
+      productId: item.productId,
+      totalQuantitySold: item.productQuantity
+    }
+    productSalesDetails.push(productSalesDetail)
+  } else{
+    existingItem.totalQuantitySold +=item.productQuantity
+    }
+  }
+
+interface ProductNameSales{
+  productName: string|undefined;
+  totalQuantitySold: number;
+  totalAmountMade:number;
+}
+
+let productNameSale:ProductNameSales ={
+  productName: "",
+  totalQuantitySold:0,
+  totalAmountMade: 0
+}
+const productNameSales:ProductNameSales[] = []
+
+for(const product of productSalesDetails){
+   const correspondingProduct =  await Product.findByPk(product.productId)
+   if(!correspondingProduct){
+    res.json({message: `correspoinding product not found`})
+    return
+   }
+  const correspondingProductName = correspondingProduct?.productTitle
+  const amountMade = correspondingProduct?.productPrice * product.totalQuantitySold
+
+  productNameSale = {
+    productName: correspondingProductName,
+    totalQuantitySold: product.totalQuantitySold,
+    totalAmountMade: amountMade
+  }
+
+  productNameSales.push(productNameSale)
+}
+
+const sortedProductNameSales = productNameSales.sort((a, b)=>{ return b.totalAmountMade - a.totalAmountMade})
+
+res.json({sortedProductNameSales})
 
 
+
+}
+
+export const getTenantRevenue = async(req: Request, res: Response):Promise<void>=>{
+const allSales = await Sale.findAll({where:{saleStatus: 'completed'}})
+if(!allSales){
+  res.json({message: `No Completed Sales Found`})
+  return
+}
+
+const allPurchasedItems = await OrderItem.findAll()
+if(!allPurchasedItems){
+  res.json({message: `No Completed orders Found`})
+  return
+}
+
+interface ProductSalesDetails{
+  productId: string;
+  shopId:string;
+  totalQuantitySold: number
+}
+let
+ productSalesDetail:ProductSalesDetails = {
+  productId: allPurchasedItems[0].productId,
+  shopId: allPurchasedItems[0].shopId,
+  totalQuantitySold:allPurchasedItems[0].productQuantity,
+}
+
+const productSalesDetails: ProductSalesDetails[] = []
+for(const item of allPurchasedItems){
+  const existingItem = productSalesDetails.find((currentItem)=>{return currentItem.productId == item.productId})
+
+  if(!existingItem){
+     productSalesDetail ={
+      productId: item.productId,
+      shopId: item.shopId,
+      totalQuantitySold: item.productQuantity
+    }
+    productSalesDetails.push(productSalesDetail)
+  } else{
+    existingItem.totalQuantitySold +=item.productQuantity
+    }
+  }
+
+interface ProductNameSales{
+  productName: string|undefined;
+  shopName:string|undefined
+  totalQuantitySold: number;
+  totalAmountMade:number;
+}
+
+let productNameSale:ProductNameSales ={
+  productName: "",
+  shopName:"",
+  totalQuantitySold:0,
+  totalAmountMade: 0
+}
+const productNameSales:ProductNameSales[] = []
+
+for(const product of productSalesDetails){
+   const correspondingProduct =  await Product.findByPk(product.productId)
+   const correspondingShop = await ShopModel.findByPk(product.shopId)
+   if(!correspondingProduct || !correspondingShop){
+    res.json({message: `correspoinding product and shop not found`})
+    return
+   }
+  const correspondingProductName = correspondingProduct?.productTitle
+  const correspondingShopName = correspondingShop?.shopName
+  
+  const amountMade = correspondingProduct?.productPrice * product.totalQuantitySold
+
+  productNameSale = {
+    productName: correspondingProductName,
+    shopName: correspondingShopName,
+    totalQuantitySold: product.totalQuantitySold,
+    totalAmountMade: amountMade
+  }
+
+  productNameSales.push(productNameSale)
+}
+
+
+const sortedDetails = productNameSales.sort((a,b)=>{ return b.totalAmountMade - a.totalAmountMade})
+
+interface TenantSalesDetails{
+  tenantName: string|undefined
+  totalItemsSold: number;
+  totalRevenue: number;
+}
+
+let tenantSalesDetails:TenantSalesDetails = {
+  tenantName: sortedDetails[0].shopName,
+  totalItemsSold: sortedDetails[0].totalQuantitySold,
+  totalRevenue: sortedDetails[0].totalAmountMade
+}
+const allTenantSalesDetails:TenantSalesDetails[] = []
+
+
+for(const details of sortedDetails){
+  const existingDetails = allTenantSalesDetails.find((currentdetails)=>{return currentdetails.tenantName == details.shopName})
+
+  if(!existingDetails){
+     tenantSalesDetails ={
+      tenantName: details.shopName,
+      totalItemsSold: details.totalQuantitySold,
+      totalRevenue: details.totalAmountMade
+    }
+    allTenantSalesDetails.push(tenantSalesDetails)
+  } else{
+    existingDetails.totalItemsSold += details.totalQuantitySold
+    existingDetails.totalRevenue += details.totalAmountMade
+    }
+  }
+
+
+  res.json({allTenantSalesDetails})
+
+}
+
+
+
+/////////////////////////////////////////////////////////////////////////////////////////
 export const getTenantDetails = async(req: Request, res: Response)=>{
   
   const tenantDetails = await User.findAll({
