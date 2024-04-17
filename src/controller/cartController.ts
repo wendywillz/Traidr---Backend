@@ -23,7 +23,7 @@ const createNewCart = async (currentUserId: string) => {
 
 //add to cart would execute on a post request from the frontend
 export const addToCart = async (req: Request, res: Response) => {
-    // const currentProductId = req.params.productId
+  // const currentProductId = req.params.productId
   const currentUserId = await getUserIdFromToken(req, res);
   const { currentProductId, productQuantity } = req.body;
 
@@ -246,7 +246,7 @@ export const moveItemToWishList = async (req: Request, res: Response) => {
 export const getCartCount = async (req: Request, res: Response) => {
   try {
     const currentUserId = await getUserIdFromToken(req, res);
-console.log(`currentUserId: ${currentUserId}`)
+    console.log(`currentUserId: ${currentUserId}`);
     const userCartItem = await Cart.findOne({
       where: { userId: currentUserId },
     });
@@ -262,7 +262,6 @@ console.log(`currentUserId: ${currentUserId}`)
         userId: currentUserId,
         cartId: userCartId,
       },
-      attributes: [`productQuantity`],
     });
 
     if (!userCartItems) {
@@ -270,16 +269,25 @@ console.log(`currentUserId: ${currentUserId}`)
       return;
     }
 
-    const totalItems: number = userCartItems.reduce((acc, curr: CartItem) => {
-      return acc + curr.productQuantity;
-    }, 0);
+    // const totalItems: number = userCartItems.reduce((acc, curr: CartItem) => {
+    //   return acc + curr.productQuantity;
+    // }, 0);
 
-    const cartCount = {
-      totalCartCount: totalItems,
-    };
-    res.json({ cartCount });
+    // const cartCount = {
+    //   totalCartCount: totalItems,
+    // };
+    
+    const userCart: unknown[] = [];
+    userCartItems.forEach((item) => {
+      userCart.push({
+        productId: item.dataValues.productId,
+        productQuantity: item.dataValues.productQuantity,
+      });
+    });
+    console.log("cartCount", userCart);
+    res.json({ userCart });
   } catch (error) {
-      console.log(`Error getting cart count: ${error}`);
+    console.log(`Error getting cart count: ${error}`);
     res.json({ error: `Error getting cart count` });
   }
 };
