@@ -467,3 +467,37 @@ export const deleteSale = async(req:Request, res:Response)=>{
 
     console.log(`Sale deleted`);
 }
+
+export const getSaleTotal = async(req:Request, res: Response)=>{
+   const currentUserId = await getUserIdFromToken(req, res) 
+
+    const currentUserCart = await Cart.findOne({
+      where:{
+        userId: currentUserId
+      }
+    })
+  
+    const currentUserCartId = currentUserCart?.dataValues.cartId
+  
+    const specifiedOrder = await Order.findOne({
+      where:{
+        userId: currentUserId,
+        cartId: currentUserCartId,
+      }
+    })
+    const specifiedOrderId = specifiedOrder?.dataValues.orderId
+    const specifiedSale = await Sale.findOne({
+        where:{
+            userId:currentUserId,
+            orderId: specifiedOrderId
+        }
+    })
+
+    const orderTotal = specifiedSale?.saleTotal
+
+    const responseData = {
+      saleTotal: orderTotal
+    }
+
+    res.json({responseData})
+}
