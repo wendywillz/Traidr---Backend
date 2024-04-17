@@ -86,13 +86,11 @@ export const changeShopLogo = async (req: Request, res: Response) => {
     shopImageURL: photoPath,
   })
     if (updatedShopProfilePics) {
-      console.log("updatedShopProfilePics", shopDetail?.dataValues.shopImageURL)
-      res.json({ shopDetail });
+      res.json({ shopDetail: shopDetail?.dataValues.shopImageURL });
       return
   }
   
   } catch (error) {
-  console.log("error", error)
   res.json({ error: 'Error updating user' })
 }
 }
