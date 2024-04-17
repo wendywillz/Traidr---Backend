@@ -23,7 +23,7 @@ const createNewCart = async (currentUserId: string) => {
 
 //add to cart would execute on a post request from the frontend
 export const addToCart = async (req: Request, res: Response) => {
-  // const currentProductId = req.params.productId
+    // const currentProductId = req.params.productId
   const currentUserId = await getUserIdFromToken(req, res);
   const { currentProductId, productQuantity } = req.body;
 
