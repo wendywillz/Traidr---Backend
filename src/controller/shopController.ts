@@ -2,6 +2,7 @@ import ShopModel from '../model/shop';
 import { Request, Response } from 'express';
 import User from '../model/user';
 
+const BACKEND_URL = process.env.BACKEND_URL;
 
 export const createNewShop = async (req: Request, res: Response): Promise<void> => {
   try {
@@ -27,7 +28,7 @@ export const createNewShop = async (req: Request, res: Response): Promise<void> 
       res.json({ userError: 'User not found' });
     }
     else {
-      await user.update({isSeller: true})
+      await user.update({isSeller: true, shopName})
       res.json({ shopCreated: newShop })
     }
       // console.log("newShop", newShop)
@@ -69,4 +70,29 @@ export const getShopOwnerByShopId = async(req:Request, res:Response): Promise<vo
   }
 
   res.json({shopOwner})
+}
+export const changeShopLogo = async (req: Request, res: Response) => {
+  try {
+  if (!req.file) {
+    res.json({ error: 'select a photo to upload' });
+    return;
+  }
+  const { shopId } = req.body
+  
+  const photoPath = `${BACKEND_URL}/uploads/shopLogo/${req.file?.filename}`;
+      
+  const shopDetail = await ShopModel.findOne({ where: { shopId } });
+  const updatedShopProfilePics = await shopDetail?.update({
+    shopImageURL: photoPath,
+  })
+    if (updatedShopProfilePics) {
+      console.log("updatedShopProfilePics", shopDetail?.dataValues.shopImageURL)
+      res.json({ shopDetail });
+      return
+  }
+  
+  } catch (error) {
+  console.log("error", error)
+  res.json({ error: 'Error updating user' })
+}
 }

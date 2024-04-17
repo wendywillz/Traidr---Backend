@@ -113,7 +113,8 @@ export const getSpecificDeliveryId = async(currentUserId:string)=>{
 
 export const getUserIdFromToken = async(req:Request, res:Response)=>{
     //Using JWT to get the user
-    const token = req.headers.authorization?.split(' ')[1]
+    try {
+      const token = req.headers.authorization?.split(' ')[1]
     if (!token) {
         res.json({ noTokenError: 'Unauthorized - Token not provided' })
       } else {
@@ -124,5 +125,14 @@ export const getUserIdFromToken = async(req:Request, res:Response)=>{
       const userId = user?.dataValues.userId
       return userId
       }
+    } catch (error) {
+      if (error instanceof jwt.TokenExpiredError) {
+        res.json({ error: 'Unauthorized - Token has expired' });
+      } else if (error instanceof jwt.JsonWebTokenError) {
+        res.json({ error: 'Unauthorized - Token verification failed' });
+      } else {
+        res.json({ error: 'Internal server error' });
+      }
+    }
     
 }

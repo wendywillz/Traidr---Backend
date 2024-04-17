@@ -217,17 +217,21 @@ export async function checkAndVerifyUserToken(req: Request, res: Response): Prom
         dateOfBirth: user?.dataValues.dateOfBirth,
         profilePic: user?.dataValues.profilePic
       }
+      console.log("shopName", userDetail.shopName)
       res.json({ userDetail })
 
       
     }
 
   } catch (error: any) {
-    if (error.name === 'TokenExpiredError') {
-      res.json({ tokenExpiredError: 'Unauthorized - Token has expired' })
-    } else {
-      res.json({ verificationError: 'Unauthorized - Token verification failed' })
-    }
+    if (error instanceof jwt.TokenExpiredError) {
+        res.json({ error: 'Unauthorized - Token has expired' });
+      } else if (error instanceof jwt.JsonWebTokenError) {
+        res.json({ error: 'Unauthorized - Token verification failed' });
+      } else {
+        res.json({ error: 'Internal server error' });
+      }
+   
   }
 }
 
