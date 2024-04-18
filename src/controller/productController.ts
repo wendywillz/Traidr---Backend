@@ -156,9 +156,9 @@ export const getProductById = async (req: Request, res: Response): Promise<void>
     whereCondition.productTitle = {
         [Op.iLike] : `%${color}%`
       };
-      whereCondition.productDescription = {
-        [Op.iLike] : `%${color}%`
-      }
+      // whereCondition.productDescription = {
+      //   [Op.iLike] : `%${color}%`
+      // }
     }
     
   
